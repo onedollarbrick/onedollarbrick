@@ -123,10 +123,14 @@ input{
   <div class="heroSub">I am trying to find out.</div>
 </div>
 
+<div id="aboutToggle">About</div>
+
 <div class="controls">
   <button class="t1 active" onclick="selectTier(this)">1$</button>
   <button class="t5" onclick="selectTier(this)">5$</button>
   <button class="t10" onclick="selectTier(this)">10$</button>
+  <button class="tmore" onclick="showMore()">more?</button>
+  <button class="tshare" onclick="shareOnly()">🤍 Show some love</button>
   <input id="textInput" placeholder="Text (6)">
   <button onclick="armBrick()">SET BRICK</button>
 </div>
@@ -150,15 +154,22 @@ Payments are processed via Stripe.
 </div>
 
 <script>
-const SUPABASE_URL="https://jftttrosqjvcdgummhlm.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc";
-const supabase=supabaseJs.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  /* =========================
+   SUPABASE INIT
+========================= */
+const SUPABASE_URL = "https://jftttrosqjvcdgummhlm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc";
+const supabase = supabaseJs.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 const wall=document.getElementById("wall");
 const rowsStart=7, cols=14;
 let armed=false, bricksPlaced=0;
+let paid=false;
 
-for(let i=0;i<rowsStart;i++) addRow();
+for(let r=0;r<rowsStart;r++) addRow();
 
 function addRow(){
   const row=document.createElement("div");
@@ -181,66 +192,55 @@ function selectTier(el){
 }
 
 function armBrick(){
+  if(!paid){
+    const tier=document.querySelector(".controls .active").innerText;
+    const text=textInput.value.trim();
+    if(!text){alert("Please enter text");return;}
+
+    let url="";
+    if(tier==="1$") url="https://buy.stripe.com/test_8x2cN7c2nfZlaHP369gnK03";
+    if(tier==="5$") url="https://buy.stripe.com/test_9B6eVf6I328veY58qtgnK04";
+    if(tier==="10$") url="https://buy.stripe.com/test_00w7sNd6r9AX4jreORgnK05";
+
+    localStorage.setItem("brick_text",text);
+    localStorage.setItem("brick_tier",tier);
+    location.href=url;
+    return;
+  }
   armed=true;
 }
 
 textInput.oninput=e=>e.target.value=e.target.value.slice(0,6);
 
-async function placeBrick(brick){
+function placeBrick(brick){
   if(!armed||brick.classList.contains("placed"))return;
-
-  const row=[...wall.children].indexOf(brick.parentElement);
-  const col=[...brick.parentElement.children].indexOf(brick);
-  const text=textInput.value;
-  const tierText=document.querySelector(".controls .active").innerText;
-  const tier=tierText==="1$"?1:tierText==="5$"?5:10;
-
-  const {error}=await supabase.from("bricks").insert({row,col,text,tier});
-  if(error){alert("Save failed");return;}
-
-  activateBrick(brick,text,tier);
-  armed=false;
-  bricksPlaced++;
-  updateProgress();
-  maybeGrowWall();
-}
-
-function activateBrick(brick,text,tier){
-  brick.textContent=text;
+  brick.textContent=textInput.value;
   brick.classList.add("placed");
-  brick.style.background=
-    tier===1?"#f2c94c":tier===5?"#f2994a":"#5fb3ff";
-  brick.style.color="#000";
-}
-
-function updateProgress(){
+  const active=document.querySelector(".controls .active");
+  brick.style.background=getComputedStyle(active).background;
+  brick.style.color=getComputedStyle(active).color;
+  bricksPlaced++;
   brickCount.textContent=bricksPlaced;
   progressFill.style.width=(bricksPlaced/1000000*100)+"%";
+  armed=false;
+  paid=false;
 }
 
-function isRowFull(row){
-  return [...row.children].every(b=>b.classList.contains("placed"));
-}
-
-function maybeGrowWall(){
-  while(wall.children.length && isRowFull(wall.children[wall.children.length-1])){
-    addRow();
+window.addEventListener("load",()=>{
+  if(new URLSearchParams(location.search).get("paid")==="1"){
+    const text=localStorage.getItem("brick_text");
+    const tier=localStorage.getItem("brick_tier");
+    if(text&&tier){
+      textInput.value=text;
+      document.querySelectorAll(".controls button").forEach(b=>{
+        b.classList.toggle("active",b.innerText===tier);
+      });
+      paid=true;
+      armed=true;
+      history.replaceState({},document.title,"/");
+    }
   }
-}
-
-async function loadPlacedBricks(){
-  const {data}=await supabase.from("bricks").select("*");
-  data.forEach(b=>{
-    while(wall.children.length<=b.row) addRow();
-    const brick=wall.children[b.row].children[b.col];
-    activateBrick(brick,b.text,b.tier);
-  });
-  bricksPlaced=data.length;
-  updateProgress();
-  maybeGrowWall();
-}
-
-loadPlacedBricks();
+});
 </script>
 
 </body>
