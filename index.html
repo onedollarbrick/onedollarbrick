@@ -154,6 +154,16 @@ Payments are processed via Stripe.
 </div>
 
 <script>
+  /* =========================
+   SUPABASE INIT
+========================= */
+const SUPABASE_URL = "https://jftttrosqjvcdgummhlm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc";
+const supabase = supabaseJs.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
 const wall=document.getElementById("wall");
 const rowsStart=7, cols=14;
 let armed=false, bricksPlaced=0;
