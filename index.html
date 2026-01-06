@@ -169,7 +169,8 @@ const rowsStart=7, cols=14;
 let armed=false, bricksPlaced=0;
 let paid=false;
 
-for(let r=0;r<rowsStart;r++) addRow();
+for(let r=0;r<rowsStart;r++) addRow(false);
+
 
 function addRow(){
   const row=document.createElement("div");
