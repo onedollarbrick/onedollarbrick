@@ -191,12 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
     wall.appendChild(row);
   }
 
-  function selectTier(el){
+  window.selectTier = function(el){
+
     document.querySelectorAll(".controls button").forEach(b=>b.classList.remove("active"));
     el.classList.add("active");
   }
 
-  function armBrick(){
+  window.armBrick = function(){
+
     if(!paid){
       const tier=document.querySelector(".controls .active").innerText;
       const text=textInput.value.trim();
