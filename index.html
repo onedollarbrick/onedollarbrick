@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-
 <style>
 *{box-sizing:border-box}
 body{
@@ -156,99 +155,109 @@ Payments are processed via Stripe.
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-document.addEventListener("DOMContentLoaded", () => {
+const SUPABASE_URL = "https://jftttrosqjvcdgummhlm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  /* =========================
-     SUPABASE INIT
-  ========================= */
-  const SUPABASE_URL = "https://jftttrosqjvcdgummhlm.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc";
+const wall = document.getElementById("wall");
+const rowsStart = 7, cols = 14;
+let armed=false, bricksPlaced=0, paid=false;
 
-  const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+for(let r=0;r<rowsStart;r++) addRow();
+await loadBricks();
 
-  const wall = document.getElementById("wall");
-  const rowsStart = 7, cols = 14;
-  let armed = false, bricksPlaced = 0;
-  let paid = false;
-
-  for (let r = 0; r < rowsStart; r++) addRow();
-
-  function addRow() {
-    const row = document.createElement("div");
-    row.className = "row";
-    if (wall.children.length % 2 === 1) row.classList.add("offset");
-
-    for (let c = 0; c < cols; c++) {
-      const b = document.createElement("div");
-      b.className = "brick";
-      b.onclick = () => placeBrick(b);
-      b.onmouseenter = () =>
-        armed && !b.classList.contains("placed") && b.classList.add("preview");
-      b.onmouseleave = () => b.classList.remove("preview");
-      row.appendChild(b);
-    }
-    wall.appendChild(row);
+function addRow(){
+  const row=document.createElement("div");
+  row.className="row";
+  if(wall.children.length%2===1) row.classList.add("offset");
+  for(let c=0;c<cols;c++){
+    const b=document.createElement("div");
+    b.className="brick";
+    b.onclick=()=>placeBrick(b);
+    b.onmouseenter=()=>armed&&!b.classList.contains("placed")&&b.classList.add("preview");
+    b.onmouseleave=()=>b.classList.remove("preview");
+    row.appendChild(b);
   }
+  wall.appendChild(row);
+}
 
-  window.selectTier = function(el){
-    document.querySelectorAll(".controls button").forEach(b=>b.classList.remove("active"));
-    el.classList.add("active");
+window.selectTier=el=>{
+  document.querySelectorAll(".controls button").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+};
+
+window.armBrick=()=>{
+  if(!paid){
+    const tier=document.querySelector(".controls .active").innerText;
+    const text=textInput.value.trim();
+    if(!text){alert("Please enter text");return;}
+    let url="";
+    if(tier==="1$") url="https://buy.stripe.com/test_8x2cN7c2nfZlaHP369gnK03";
+    if(tier==="5$") url="https://buy.stripe.com/test_9B6eVf6I328veY58qtgnK04";
+    if(tier==="10$") url="https://buy.stripe.com/test_00w7sNd6r9AX4jreORgnK05";
+    localStorage.setItem("brick_text",text);
+    localStorage.setItem("brick_tier",tier);
+    location.href=url;
+    return;
   }
+  armed=true;
+};
 
-  window.armBrick = function(){
-    if(!paid){
-      const tier=document.querySelector(".controls .active").innerText;
-      const text=textInput.value.trim();
-      if(!text){alert("Please enter text");return;}
+textInput.oninput=e=>e.target.value=e.target.value.slice(0,6);
 
-      let url="";
-      if(tier==="1$") url="https://buy.stripe.com/test_8x2cN7c2nfZlaHP369gnK03";
-      if(tier==="5$") url="https://buy.stripe.com/test_9B6eVf6I328veY58qtgnK04";
-      if(tier==="10$") url="https://buy.stripe.com/test_00w7sNd6r9AX4jreORgnK05";
+async function placeBrick(brick){
+  if(!armed||brick.classList.contains("placed"))return;
 
-      localStorage.setItem("brick_text",text);
-      localStorage.setItem("brick_tier",tier);
-      location.href=url;
-      return;
-    }
-    armed=true;
-  }
+  const rowIndex=[...wall.children].indexOf(brick.parentElement);
+  const colIndex=[...brick.parentElement.children].indexOf(brick);
 
-  textInput.oninput=e=>e.target.value=e.target.value.slice(0,6);
+  const tierText=document.querySelector(".controls .active").innerText;
+  const tier=tierText==="1$"?1:tierText==="5$"?5:10;
 
-  function placeBrick(brick){
-    if(!armed||brick.classList.contains("placed"))return;
-    brick.textContent=textInput.value;
+  const {error}=await supabase.from("bricks").insert({
+    row:rowIndex,col:colIndex,text:textInput.value,tier
+  });
+
+  if(error){alert("Brick already taken");return;}
+
+  brick.textContent=textInput.value;
+  brick.classList.add("placed");
+
+  if(tier===1){brick.style.background="#f2c94c";brick.style.color="#1a1a1a";}
+  if(tier===5){brick.style.background="#f2994a";brick.style.color="#1a1a1a";}
+  if(tier===10){brick.style.background="#5fb3ff";brick.style.color="#0e0e11";}
+
+  bricksPlaced++;
+  brickCount.textContent=bricksPlaced;
+  progressFill.style.width=(bricksPlaced/1000000*100)+"%";
+  armed=false; paid=false;
+}
+
+async function loadBricks(){
+  const {data}=await supabase.from("bricks").select("*");
+  data.forEach(b=>{
+    while(wall.children.length<=b.row) addRow();
+    const brick=wall.children[b.row].children[b.col];
+    brick.textContent=b.text;
     brick.classList.add("placed");
+    if(b.tier===1){brick.style.background="#f2c94c";brick.style.color="#1a1a1a";}
+    if(b.tier===5){brick.style.background="#f2994a";brick.style.color="#1a1a1a";}
+    if(b.tier===10){brick.style.background="#5fb3ff";brick.style.color="#0e0e11";}
+  });
+  bricksPlaced=data.length;
+  brickCount.textContent=bricksPlaced;
+  progressFill.style.width=(bricksPlaced/1000000*100)+"%";
+}
 
-    const active=document.querySelector(".controls .active");
-    brick.style.background=getComputedStyle(active).background;
-    brick.style.color=getComputedStyle(active).color;
-
-    bricksPlaced++;
-    brickCount.textContent=bricksPlaced;
-    progressFill.style.width=(bricksPlaced/1000000*100)+"%";
-
-    armed=false;
-    paid=false;
-  }
-
-  if(new URLSearchParams(location.search).get("paid")==="1"){
-    const text=localStorage.getItem("brick_text");
-    const tier=localStorage.getItem("brick_tier");
-    if(text&&tier){
-      textInput.value=text;
-      document.querySelectorAll(".controls button").forEach(b=>{
-        b.classList.toggle("active",b.innerText===tier);
-      });
-      paid=true;
-      armed=true;
-      history.replaceState({},document.title,"/");
-    }
-  }
-
-});
+if(new URLSearchParams(location.search).get("paid")==="1"){
+  textInput.value=localStorage.getItem("brick_text")||"";
+  document.querySelectorAll(".controls button").forEach(b=>{
+    b.classList.toggle("active",b.innerText===localStorage.getItem("brick_tier"));
+  });
+  paid=true; armed=true;
+  history.replaceState({},document.title,"/");
+}
 </script>
+
+</body>
+</html>
