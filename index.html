@@ -5,7 +5,7 @@
 <title>One Dollar Brick</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <style>
 *{box-sizing:border-box}
@@ -153,7 +153,9 @@ Bricks represent real contributions.<br>
 Payments are processed via Stripe.
 </div>
 
-<script>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 document.addEventListener("DOMContentLoaded", () => {
 
   /* =========================
@@ -162,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const SUPABASE_URL = "https://jftttrosqjvcdgummhlm.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc";
 
-  const supabase = window.supabase.createClient(
+  const supabase = createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
   );
@@ -192,13 +194,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.selectTier = function(el){
-
     document.querySelectorAll(".controls button").forEach(b=>b.classList.remove("active"));
     el.classList.add("active");
   }
 
   window.armBrick = function(){
-
     if(!paid){
       const tier=document.querySelector(".controls .active").innerText;
       const text=textInput.value.trim();
@@ -252,7 +252,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-
-
-</body>
-</html>
