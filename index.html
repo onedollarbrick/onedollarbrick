@@ -36,6 +36,8 @@ h1{
   margin-bottom:18px;
   cursor:pointer;
   color:#6fcf97;
+  max-width:520px;
+  text-align:center;
 }
 .controls{
   display:flex;
@@ -161,10 +163,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const wall = document.getElementById("wall");
 const rowsStart = 7, cols = 14;
-let armed=false, bricksPlaced=0, paid=false;
+let armed = false, paid = false;
+let bricksPlaced = 0;
 
 for(let r=0;r<rowsStart;r++) addRow();
-await loadBricks();
 
 function addRow(){
   const row=document.createElement("div");
@@ -181,80 +183,90 @@ function addRow(){
   wall.appendChild(row);
 }
 
-window.selectTier=el=>{
+async function loadBricks(){
+  const { data } = await supabase.from("bricks").select("*");
+  bricksPlaced = data.length;
+  brickCount.textContent = bricksPlaced;
+  progressFill.style.width = (bricksPlaced/1000000*100)+"%";
+
+  data.forEach(b=>{
+    const row = wall.children[b.row];
+    if(!row) return;
+    const brick = row.children[b.col];
+    if(!brick) return;
+    brick.textContent = b.text;
+    brick.classList.add("placed");
+    brick.style.background = b.tier===1?"#f2c94c":b.tier===5?"#f2994a":"#5fb3ff";
+    brick.style.color="#000";
+  });
+}
+loadBricks();
+
+window.selectTier = el=>{
   document.querySelectorAll(".controls button").forEach(b=>b.classList.remove("active"));
   el.classList.add("active");
 };
 
-window.armBrick=()=>{
+window.armBrick = ()=>{
   if(!paid){
     const tier=document.querySelector(".controls .active").innerText;
     const text=textInput.value.trim();
     if(!text){alert("Please enter text");return;}
-    let url="";
-    if(tier==="1$") url="https://buy.stripe.com/test_8x2cN7c2nfZlaHP369gnK03";
-    if(tier==="5$") url="https://buy.stripe.com/test_9B6eVf6I328veY58qtgnK04";
-    if(tier==="10$") url="https://buy.stripe.com/test_00w7sNd6r9AX4jreORgnK05";
+    const urls={
+      "1$":"https://buy.stripe.com/test_8x2cN7c2nfZlaHP369gnK03",
+      "5$":"https://buy.stripe.com/test_9B6eVf6I328veY58qtgnK04",
+      "10$":"https://buy.stripe.com/test_00w7sNd6r9AX4jreORgnK05"
+    };
     localStorage.setItem("brick_text",text);
     localStorage.setItem("brick_tier",tier);
-    location.href=url;
+    location.href=urls[tier];
     return;
   }
   armed=true;
 };
 
-textInput.oninput=e=>e.target.value=e.target.value.slice(0,6);
-
 async function placeBrick(brick){
   if(!armed||brick.classList.contains("placed"))return;
-
-  const rowIndex=[...wall.children].indexOf(brick.parentElement);
-  const colIndex=[...brick.parentElement.children].indexOf(brick);
-
+  const row=[...wall.children].indexOf(brick.parentElement);
+  const col=[...brick.parentElement.children].indexOf(brick);
+  const text=textInput.value;
   const tierText=document.querySelector(".controls .active").innerText;
   const tier=tierText==="1$"?1:tierText==="5$"?5:10;
 
-  const {error}=await supabase.from("bricks").insert({
-    row:rowIndex,col:colIndex,text:textInput.value,tier
-  });
+  const { error } = await supabase.from("bricks").insert({row,col,text,tier});
+  if(error){alert("This brick is already taken.");return;}
 
-  if(error){alert("Brick already taken");return;}
-
-  brick.textContent=textInput.value;
+  brick.textContent=text;
   brick.classList.add("placed");
-
-  if(tier===1){brick.style.background="#f2c94c";brick.style.color="#1a1a1a";}
-  if(tier===5){brick.style.background="#f2994a";brick.style.color="#1a1a1a";}
-  if(tier===10){brick.style.background="#5fb3ff";brick.style.color="#0e0e11";}
-
+  brick.style.background=tier===1?"#f2c94c":tier===5?"#f2994a":"#5fb3ff";
+  brick.style.color="#000";
   bricksPlaced++;
   brickCount.textContent=bricksPlaced;
   progressFill.style.width=(bricksPlaced/1000000*100)+"%";
-  armed=false; paid=false;
+  armed=false;paid=false;
 }
 
-async function loadBricks(){
-  const {data}=await supabase.from("bricks").select("*");
-  data.forEach(b=>{
-    while(wall.children.length<=b.row) addRow();
-    const brick=wall.children[b.row].children[b.col];
-    brick.textContent=b.text;
-    brick.classList.add("placed");
-    if(b.tier===1){brick.style.background="#f2c94c";brick.style.color="#1a1a1a";}
-    if(b.tier===5){brick.style.background="#f2994a";brick.style.color="#1a1a1a";}
-    if(b.tier===10){brick.style.background="#5fb3ff";brick.style.color="#0e0e11";}
-  });
-  bricksPlaced=data.length;
-  brickCount.textContent=bricksPlaced;
-  progressFill.style.width=(bricksPlaced/1000000*100)+"%";
-}
+window.shareOnly = ()=>{
+  const url=encodeURIComponent(location.href);
+  const text=encodeURIComponent("Can the internet buy peace for $1?");
+  window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`,"_blank");
+};
+
+window.showMore = ()=>alert("Custom amounts coming soon.");
+
+let aboutOpen=false;
+aboutToggle.onclick=()=>{
+  aboutOpen=!aboutOpen;
+  aboutToggle.innerText=aboutOpen
+    ?"This is an experiment about whether many small contributions can resolve a real-world legal conflict."
+    :"About";
+};
 
 if(new URLSearchParams(location.search).get("paid")==="1"){
   textInput.value=localStorage.getItem("brick_text")||"";
-  document.querySelectorAll(".controls button").forEach(b=>{
-    b.classList.toggle("active",b.innerText===localStorage.getItem("brick_tier"));
-  });
-  paid=true; armed=true;
+  const tier=localStorage.getItem("brick_tier");
+  document.querySelectorAll(".controls button").forEach(b=>b.classList.toggle("active",b.innerText===tier));
+  paid=true;armed=true;
   history.replaceState({},document.title,"/");
 }
 </script>
