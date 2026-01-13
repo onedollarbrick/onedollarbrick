@@ -36,8 +36,6 @@ h1{
   margin-bottom:18px;
   cursor:pointer;
   color:#6fcf97;
-  max-width:520px;
-  text-align:center;
 }
 .controls{
   display:flex;
@@ -60,35 +58,25 @@ button.active{outline:3px solid #fff}
 .t10{background:#5fb3ff;color:#0e0e11}
 .tmore{background:linear-gradient(135deg,#e0e0e0,#bdbdbd);color:#1a1a1a}
 .tshare{background:#ff6fd8;color:#1a1a1a}
-input{
-  padding:8px;
-  border-radius:6px;
-  border:0;
-  width:160px;
-}
+input{padding:8px;border-radius:6px;border:0;width:160px}
 .progress-wrap{width:100%;max-width:1100px;margin-top:18px}
 .progress-bar{
   height:18px;
   background:#222;
   border-radius:10px;
   overflow:hidden;
+  margin-bottom:16px;
 }
-.progress-fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#ffd54f,#ff8c42);
+
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffd54f,#ff8c42)}
+.progressLabel{
+  text-align:center;
+  font-size:20px;
+  margin-top:18px;
 }
-.progressLabel{text-align:center;font-size:20px;margin-top:14px}
+
 .progressSub{font-size:15px;opacity:.7;text-align:center;margin-top:6px}
-.wall{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  padding:14px;
-  margin-top:22px;
-  background:#151515;
-  border-radius:12px;
-}
+.wall{display:flex;flex-direction:column;gap:6px;padding:14px;margin-top:22px;background:#151515;border-radius:12px}
 .row{display:grid;grid-template-columns:repeat(14,78px);gap:6px}
 .row.offset{margin-left:39px}
 .brick{
@@ -104,14 +92,43 @@ input{
 }
 .brick.placed{cursor:default}
 .brick.preview{outline:2px dashed #fff;opacity:.6}
-.footerNote{
-  font-size:11px;
-  opacity:.55;
-  margin:28px 0 30px;
-  text-align:center;
-  max-width:520px;
-  line-height:1.6;
+.footerNote{font-size:11px;opacity:.55;margin:28px 0 30px;text-align:center;max-width:520px;line-height:1.6}
+.milestones{
+  display:flex;
+  justify-content:space-between;
+  margin:22px auto 0;
+  max-width:1100px;
+  width:100%;
+  padding:0 24px;
+  opacity:0.65;
 }
+
+.milestone{
+  text-align:center;
+  flex:1;
+  color:#6b6b6b;
+  font-size:11px;
+  font-family:"Press Start 2P", monospace;
+}
+
+.milestone .dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#444;
+  margin:0 auto 12px;
+}
+
+.milestone.active{
+  color:#9cffc9;
+  opacity:1;
+}
+
+.milestone.active .dot{
+  background:#6fcf97;
+  box-shadow:0 0 6px rgba(111,207,151,0.6);
+}
+
 </style>
 </head>
 
@@ -131,20 +148,52 @@ input{
   <button class="t5" onclick="selectTier(this)">5$</button>
   <button class="t10" onclick="selectTier(this)">10$</button>
   <button class="tmore" onclick="showMore()">more?</button>
-  <button class="tshare" onclick="shareOnly()">🤍 Show some love</button>
-  <input id="textInput" placeholder="Text (6)">
+  <button class="tshare" onclick="showLove()">🤍 Show some love</button>
+<input id="textInput" placeholder="Text (6)" maxlength="6">
+
   <button onclick="armBrick()">SET BRICK</button>
 </div>
 
 <div class="progress-wrap">
+
   <div class="progress-bar">
     <div class="progress-fill" id="progressFill"></div>
   </div>
+
+  <div class="milestones">
+    <div class="milestone" data-goal="5000">
+      <div class="dot"></div>
+      <div>5’000<br>People care</div>
+    </div>
+
+    <div class="milestone" data-goal="150000">
+      <div class="dot"></div>
+      <div>150’000<br>A real option</div>
+    </div>
+
+    <div class="milestone" data-goal="500000">
+      <div class="dot"></div>
+      <div>500’000<br>Conflict contained</div>
+    </div>
+
+    <div class="milestone" data-goal="1000000">
+      <div class="dot"></div>
+      <div>1’000’000<br>Peace</div>
+    </div>
+  </div>
+
   <div class="progressLabel">
     Placed: <strong><span id="brickCount">0</span> bricks</strong>
   </div>
-  <div class="progressSub">Goal: buying peace</div>
+
+  <div class="progressSub">
+    Goal: buying peace
+  </div>
+
 </div>
+
+
+
 
 <div class="wall" id="wall"></div>
 
@@ -154,17 +203,184 @@ Bricks represent real contributions.<br>
 Payments are processed via Stripe.
 </div>
 
+<!-- ABOUT OVERLAY -->
+<div id="aboutOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:999">
+  <div style="background:#0f1511;border:2px solid #6fcf97;border-radius:14px;padding:30px;max-width:820px;max-height:82vh;overflow-y:auto;color:#6fcf97;font-size:16px;line-height:1.6">
+
+    <p>
+    I didn’t want to fight.
+    I didn’t want years of escalation, lawyers, rising costs,
+    and a system where peace is only affordable for those with money.
+    So I tried something else.
+    </p>
+
+    <p>
+    I’m part of a homeowners association that has been stuck in a long-running conflict.
+    An office space in the building was bought by a new owner and partially demolished
+    without the required approvals. Shared parts of the building were affected.
+    Trust inside the house broke down.
+    </p>
+
+    <p>
+    What followed is familiar to many people: legal uncertainty, lawyers involved,
+    slow processes, and mounting costs. The default solution in situations like this
+    is always the same — fight it out.
+    </p>
+
+    <p>
+    There is, in theory, another option. Buy the space in question.
+    Remove the source of the conflict. Restore peace in the building.
+    </p>
+
+    <p>
+    In practice, that option requires money I don’t have.
+    And neither do most people in similar situations.
+    </p>
+
+    <p>
+    So instead of escalating, I built this.
+    One Dollar Brick is a small internet experiment inspired by the Million Dollar Homepage.
+    It asks a simple question: What happens if many people give a little,
+    instead of a few people paying a lot?
+    </p>
+
+    <p>
+    A brick costs one dollar. It doesn’t buy ownership.
+    It doesn’t promise returns.
+    It’s just a brick — placed as a signal of collective support.
+    </p>
+
+    <p>
+    If enough bricks are placed, buying peace becomes possible.
+    If not, at least the attempt was honest.
+    </p>
+
+    <p>
+    Because peace shouldn’t be a luxury.
+    And conflict shouldn’t be affordable only to those with money.
+    </p>
+
+    <p>
+    This isn’t charity. It’s cooperation.
+    </p>
+
+    <div id="aboutClose" style="margin-top:20px;text-align:center;cursor:pointer;font-family:'Press Start 2P', monospace">
+      Close
+    </div>
+
+  </div>
+</div>
+<!-- SHOW SOME LOVE OVERLAY -->
+<div id="loveOverlay" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+">
+  <div style="
+    background:#0f1511;
+    border:2px solid #6fcf97;
+    border-radius:16px;
+    padding:30px;
+    max-width:520px;
+    width:90%;
+    color:#6fcf97;
+    text-align:center;
+    font-family:'Press Start 2P', monospace;
+  ">
+
+    <div style="font-size:20px;margin-bottom:20px;">
+      Show some love
+    </div>
+
+    <div style="
+  background:#000;
+  border-radius:10px;
+  padding:20px;
+  font-family: Arial, sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  margin-bottom:22px;
+">
+
+      I didn’t place a brick,<br>
+      but I like the idea:<br>
+      buying peace instead of escalating conflict.<br><br>
+      🧱 onedollarbrick.com
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:18px;">
+      <button onclick="shareLove()">Share on X</button>
+      <button onclick="copyLove()">Copy text</button>
+    </div>
+
+    <div id="loveClose" style="
+      cursor:pointer;
+      font-size:14px;
+    ">
+      Close
+    </div>
+
+  </div>
+</div>
+
+
+<!-- MORE OVERLAY -->
+<div id="moreOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:999">
+  <div style="background:#0f1511;border:2px solid #6fcf97;border-radius:14px;padding:30px;max-width:520px;color:#6fcf97;font-size:16px;line-height:1.6;text-align:center">
+
+    <div style="font-family:'Press Start 2P', monospace;font-size:18px;margin-bottom:18px">
+      More
+    </div>
+
+    <p>
+      If you feel like giving more, thank you ❤️<br>
+      Reach out and we’ll make it work.<br>
+      mail: <strong>onedollarbrick@proton.me</strong>
+    </p>
+
+    <div id="moreClose" style="margin-top:22px;cursor:pointer;font-family:'Press Start 2P', monospace">
+      Close
+    </div>
+
+  </div>
+</div>
+
+
+
+
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SUPABASE_URL = "https://jftttrosqjvcdgummhlm.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc";
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(
+  "https://jftttrosqjvcdgummhlm.supabase.co",
+  "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc"
+);
 
-const wall = document.getElementById("wall");
-const rowsStart = 7, cols = 14;
-let armed = false, paid = false;
+const wall=document.getElementById("wall");
+const rowsStart=7, cols=14;
+let armed = false;
 let bricksPlaced = 0;
+let selectedTier = 1;
+
+function updateMilestones(){
+  document.querySelectorAll(".milestone").forEach(m => {
+    const goal = Number(m.dataset.goal);
+    m.classList.toggle("active", bricksPlaced >= goal);
+  });
+}
+
+const brickCount = document.getElementById("brickCount");
+const progressFill = document.getElementById("progressFill");
+const textInput = document.getElementById("textInput");
+
+const aboutToggle = document.getElementById("aboutToggle");
+const aboutOverlay = document.getElementById("aboutOverlay");
+const aboutClose = document.getElementById("aboutClose");
+
 
 for(let r=0;r<rowsStart;r++) addRow();
 
@@ -183,58 +399,84 @@ function addRow(){
   wall.appendChild(row);
 }
 
-async function loadBricks(){
-  const { data } = await supabase.from("bricks").select("*");
-  bricksPlaced = data.length;
-  brickCount.textContent = bricksPlaced;
-  progressFill.style.width = (bricksPlaced/1000000*100)+"%";
+const { data=[] } = await supabase.from("bricks").select("row, col, text, tier")
 
-  data.forEach(b=>{
-    const row = wall.children[b.row];
-    if(!row) return;
-    const brick = row.children[b.col];
-    if(!brick) return;
-    brick.textContent = b.text;
-    brick.classList.add("placed");
-    brick.style.background = b.tier===1?"#f2c94c":b.tier===5?"#f2994a":"#5fb3ff";
-    brick.style.color="#000";
-  });
-}
-loadBricks();
+data.forEach(b=>{
+  const brick=wall.children[b.row]?.children[b.col];
+  if(!brick) return;
+  brick.textContent=b.text;
+  brick.classList.add("placed");
+  brick.style.background=b.tier===1?"#f2c94c":b.tier===5?"#f2994a":"#5fb3ff";
+  brick.style.color="#000";
+});
+bricksPlaced=data.length;
+brickCount.textContent=bricksPlaced;
+progressFill.style.width=(bricksPlaced/1000000*100)+"%";
+updateMilestones();
 
-window.selectTier = el=>{
-  document.querySelectorAll(".controls button").forEach(b=>b.classList.remove("active"));
+
+
+window.selectTier = el => {
+document.querySelectorAll(".controls .t1, .controls .t5, .controls .t10")
+  .forEach(b => b.classList.remove("active"));
+
   el.classList.add("active");
+
+  const value = el.innerText.replace("$", "");
+  selectedTier = Number(value);
 };
 
-window.armBrick = ()=>{
-  if(!paid){
-    const tier=document.querySelector(".controls .active").innerText;
-    const text=textInput.value.trim();
-    if(!text){alert("Please enter text");return;}
-    const urls={
-      "1$":"https://buy.stripe.com/test_8x2cN7c2nfZlaHP369gnK03",
-      "5$":"https://buy.stripe.com/test_9B6eVf6I328veY58qtgnK04",
-      "10$":"https://buy.stripe.com/test_00w7sNd6r9AX4jreORgnK05"
-    };
-    localStorage.setItem("brick_text",text);
-    localStorage.setItem("brick_tier",tier);
-    location.href=urls[tier];
-    return;
-  }
-  armed=true;
+
+window.armBrick = () => {
+  armed = true;
+
+  // visuelles Feedback
+  document.body.style.cursor = "crosshair";
+
+  // Sicherheits-Timeout: armed automatisch zurücksetzen
+  setTimeout(() => {
+    armed = false;
+    document.body.style.cursor = "";
+  }, 10000);
 };
+
+
 
 async function placeBrick(brick){
+const text = textInput.value.trim();
+
+if (text.length < 1 || text.length > 6) {
+  alert("Text must be 1–6 characters");
+  armed = false;
+  document.body.style.cursor = "";
+  return;
+}
+
+
   if(!armed||brick.classList.contains("placed"))return;
+brick.style.opacity = "0.6";
+brick.style.pointerEvents = "none";
+
+
   const row=[...wall.children].indexOf(brick.parentElement);
   const col=[...brick.parentElement.children].indexOf(brick);
-  const text=textInput.value;
-  const tierText=document.querySelector(".controls .active").innerText;
-  const tier=tierText==="1$"?1:tierText==="5$"?5:10;
+ 
+const tier = selectedTier;
 
-  const { error } = await supabase.from("bricks").insert({row,col,text,tier});
-  if(error){alert("This brick is already taken.");return;}
+
+const { error } = await supabase.from("bricks").insert({ row, col, text, tier });
+
+if (error) {
+  console.warn("Brick already taken");
+  armed = false;
+  brick.classList.remove("placed");
+  brick.style.opacity = "";
+  brick.style.pointerEvents = "";
+  return;
+}
+
+
+
 
   brick.textContent=text;
   brick.classList.add("placed");
@@ -243,32 +485,64 @@ async function placeBrick(brick){
   bricksPlaced++;
   brickCount.textContent=bricksPlaced;
   progressFill.style.width=(bricksPlaced/1000000*100)+"%";
-  armed=false;paid=false;
+  updateMilestones();
+
+armed = false;
+
 }
 
-window.shareOnly = ()=>{
-  const url=encodeURIComponent(location.href);
-  const text=encodeURIComponent("Can the internet buy peace for $1?");
-  window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`,"_blank");
+window.shareOnly=()=>window.open(
+  "https://x.com/intent/tweet?text=Can%20the%20internet%20buy%20peace%20for%201%20dollar%3F&url="+encodeURIComponent(location.href),
+  "_blank"
+);
+
+window.showMore=()=>document.getElementById("moreOverlay").style.display="flex";
+
+window.copyMoreText=()=>{
+  navigator.clipboard.writeText(
+    "If you feel like giving more, thank you ❤️\n\nReach out and we’ll make it work.\nmail: onedollarbrick@proton.me"
+  );
+  alert("Text copied");
 };
 
-window.showMore = ()=>alert("Custom amounts coming soon.");
+aboutToggle.onclick=()=>aboutOverlay.style.display="flex";
+aboutClose.onclick=()=>aboutOverlay.style.display="none";
+aboutOverlay.onclick=e=>{if(e.target===aboutOverlay)aboutOverlay.style.display="none"};
 
-let aboutOpen=false;
-aboutToggle.onclick=()=>{
-  aboutOpen=!aboutOpen;
-  aboutToggle.innerText=aboutOpen
-    ?"This is an experiment about whether many small contributions can resolve a real-world legal conflict."
-    :"About";
+const moreOverlay = document.getElementById("moreOverlay");
+const moreClose = document.getElementById("moreClose");
+
+moreClose.onclick=()=>moreOverlay.style.display="none";
+moreOverlay.onclick=e=>{if(e.target===moreOverlay)moreOverlay.style.display="none"};
+const loveOverlay = document.getElementById("loveOverlay");
+const loveClose = document.getElementById("loveClose");
+
+window.showLove = () => {
+  loveOverlay.style.display = "flex";
 };
 
-if(new URLSearchParams(location.search).get("paid")==="1"){
-  textInput.value=localStorage.getItem("brick_text")||"";
-  const tier=localStorage.getItem("brick_tier");
-  document.querySelectorAll(".controls button").forEach(b=>b.classList.toggle("active",b.innerText===tier));
-  paid=true;armed=true;
-  history.replaceState({},document.title,"/");
-}
+loveClose.onclick = () => {
+  loveOverlay.style.display = "none";
+};
+
+loveOverlay.onclick = e => {
+  if (e.target === loveOverlay) loveOverlay.style.display = "none";
+};
+
+window.shareLove = () => {
+  const text = encodeURIComponent(
+    "I didn’t place a brick, but I like the idea: buying peace instead of escalating conflict. 🧱 onedollarbrick.com"
+  );
+  window.open(`https://x.com/intent/tweet?text=${text}`, "_blank");
+};
+
+window.copyLove = () => {
+  navigator.clipboard.writeText(
+    "I didn’t place a brick, but I like the idea: buying peace instead of escalating conflict. 🧱 onedollarbrick.com"
+  );
+  alert("Copied ❤️");
+};
+
 </script>
 
 </body>
