@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
+<script src="https://js.stripe.com/v3/"></script>
+
+
 <style>
 *{box-sizing:border-box}
 body{
@@ -151,7 +154,8 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   <button class="tshare" onclick="showLove()">🤍 Show some love</button>
 <input id="textInput" placeholder="Text (6)" maxlength="6">
 
-  <button onclick="armBrick()">SET BRICK</button>
+<button id="setBrickBtn">SET BRICK</button>
+
 </div>
 
 <div class="progress-wrap">
@@ -352,13 +356,72 @@ Payments are processed via Stripe.
 
 
 
+<!-- PAYMENT OVERLAY -->
+<div id="paymentOverlay" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+">
+  <div style="
+    background:#0f1511;
+    border:2px solid #6fcf97;
+    border-radius:16px;
+    padding:30px;
+    max-width:420px;
+    width:90%;
+    color:#6fcf97;
+    font-family:'Press Start 2P', monospace;
+    text-align:center;
+  ">
+    <div style="font-size:18px;margin-bottom:20px;">
+      Complete payment
+    </div>
+
+    <div id="payment-element"></div>
+
+    <button id="payBtn" style="
+      margin-top:20px;
+      padding:10px 16px;
+      font-family:'Press Start 2P', monospace;
+      cursor:pointer;
+    ">
+      Pay
+    </button>
+
+    <div id="paymentClose" style="margin-top:16px;cursor:pointer;font-size:12px;">
+      Cancel
+    </div>
+  </div>
+</div>
 <script type="module">
+  console.log("SCRIPT STARTED");
+
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabase = createClient(
   "https://jftttrosqjvcdgummhlm.supabase.co",
-  "sb_publishable_yeQRHdvKpKZeFnyn0qBNVA_jegb2_dc"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmdHR0cm9zcWp2Y2RndW1taGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1NTQ5MjksImV4cCI6MjA4MzEzMDkyOX0.kvSEVkXpbEE4Vf1HiD0Hb3G6DioDXbIAZ_ewEncyI14"
+
 );
+
+// ⚡ Prüft, ob HTTPS verwendet wird, sonst Stripe meckert
+const isLocal = location.protocol === "http:" && location.hostname === "localhost";
+const stripeKey = "pk_test_51SgpifPmJuaLnrDwhDk2NGJg9kyWnPqy9lNcDW4zTB1rLoDwNYOl76M2WfNqaAqHihFbrhwmRNI5TXCcnvTAv3QE00wWxtvV1i";
+
+if(isLocal) {
+  console.warn("⚠️ Stripe live integration funktioniert nur über HTTPS! Lokale Tests OK.");
+}
+
+const stripe = window.Stripe(stripeKey);
+
+
+let elements;
+let paymentElement;
+let currentClientSecret;
 
 const wall=document.getElementById("wall");
 const rowsStart=7, cols=14;
@@ -380,6 +443,10 @@ const textInput = document.getElementById("textInput");
 const aboutToggle = document.getElementById("aboutToggle");
 const aboutOverlay = document.getElementById("aboutOverlay");
 const aboutClose = document.getElementById("aboutClose");
+const paymentOverlay = document.getElementById("paymentOverlay");
+const paymentElementContainer = document.getElementById("payment-element");
+const payBtn = document.getElementById("payBtn");
+const paymentClose = document.getElementById("paymentClose");
 
 
 for(let r=0;r<rowsStart;r++) addRow();
@@ -401,7 +468,7 @@ function addRow(){
 
 const { data=[] } = await supabase.from("bricks").select("row, col, text, tier")
 
-data.forEach(b=>{
+data.forEach(b => {
   const brick=wall.children[b.row]?.children[b.col];
   if(!brick) return;
   brick.textContent=b.text;
@@ -429,11 +496,8 @@ document.querySelectorAll(".controls .t1, .controls .t5, .controls .t10")
 
 window.armBrick = () => {
   armed = true;
-
-  // visuelles Feedback
   document.body.style.cursor = "crosshair";
 
-  // Sicherheits-Timeout: armed automatisch zurücksetzen
   setTimeout(() => {
     armed = false;
     document.body.style.cursor = "";
@@ -442,54 +506,90 @@ window.armBrick = () => {
 
 
 
-async function placeBrick(brick){
-const text = textInput.value.trim();
 
-if (text.length < 1 || text.length > 6) {
-  alert("Text must be 1–6 characters");
+async function placeBrick(brick) {
+  console.log("🔥 INVOKE VERSION LOADED");
+
+  console.log("placeBrick() reached");
+
+  const text = textInput.value.trim();
+
+  if (text.length < 1 || text.length > 6) {
+    alert("Text must be 1–6 characters");
+    armed = false;
+    document.body.style.cursor = "";
+    return;
+  }
+
+  if (!armed) {
+    alert("Click SET BRICK first");
+    return;
+  }
+
+  if (brick.classList.contains("placed")) {
+    return;
+  }
+
+
+
+
+
+
+
+
+
+  const row = [...wall.children].indexOf(brick.parentElement);
+  const col = [...brick.parentElement.children].indexOf(brick);
+  const tier = selectedTier;
+
+  try {
+// ⚡ Fetch direkt an die Edge Function
+const res = await fetch("https://jftttrosqjvcdgummhlm.supabase.co/functions/v1/create-brick", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ row, col, text, tier }),
+});
+
+const data = await res.json();
+if (!res.ok) {
+  console.error("Edge Function Error:", data);
+  alert("Payment failed. See console.");
+  return;
+}
+
+
+   if (error) {
+  console.error("FUNCTION ERROR:", error);
+  alert("Server error. See console.");
   armed = false;
   document.body.style.cursor = "";
   return;
 }
 
 
-  if(!armed||brick.classList.contains("placed"))return;
-brick.style.opacity = "0.6";
-brick.style.pointerEvents = "none";
+    const { clientSecret } = data;
+    console.log("CLIENT SECRET:", clientSecret);
 
+    currentClientSecret = clientSecret;
 
-  const row=[...wall.children].indexOf(brick.parentElement);
-  const col=[...brick.parentElement.children].indexOf(brick);
- 
-const tier = selectedTier;
+    elements = stripe.elements({ clientSecret });
+    paymentElement = elements.create("payment");
+    paymentElement.mount("#payment-element");
 
+    paymentOverlay.style.display = "flex";
 
-const { error } = await supabase.from("bricks").insert({ row, col, text, tier });
-
-if (error) {
-  console.warn("Brick already taken");
-  armed = false;
-  brick.classList.remove("placed");
-  brick.style.opacity = "";
-  brick.style.pointerEvents = "";
-  return;
+  } catch (err) {
+    console.error("UNEXPECTED ERROR:", err);
+    alert("Payment failed. Please try again.");
+    armed = false;
+    document.body.style.cursor = "";
+  }
 }
 
 
 
-
-  brick.textContent=text;
-  brick.classList.add("placed");
-  brick.style.background=tier===1?"#f2c94c":tier===5?"#f2994a":"#5fb3ff";
-  brick.style.color="#000";
-  bricksPlaced++;
-  brickCount.textContent=bricksPlaced;
-  progressFill.style.width=(bricksPlaced/1000000*100)+"%";
-  updateMilestones();
-
-armed = false;
-
-}
 
 window.shareOnly=()=>window.open(
   "https://x.com/intent/tweet?text=Can%20the%20internet%20buy%20peace%20for%201%20dollar%3F&url="+encodeURIComponent(location.href),
@@ -543,7 +643,73 @@ window.copyLove = () => {
   alert("Copied ❤️");
 };
 
+paymentClose.onclick = () => {
+  paymentOverlay.style.display = "none";
+};
+
+payBtn.onclick = async () => {
+  payBtn.disabled = true;
+
+  console.log("Confirming payment with clientSecret:", currentClientSecret);
+
+  const { error } = await stripe.confirmPayment({
+    elements,
+    confirmParams: {
+      return_url: "https://www.onedollarbrick.com"
+
+    }
+  });
+
+  if (error) {
+    alert("Stripe error: " + error.message);
+    payBtn.disabled = false;
+  }
+};
+// 🔹 NEU: SET BRICK Button Event Listener
+document.getElementById("setBrickBtn").addEventListener("click", async () => {
+  const row = 0; // Test Brick, später automatisch den nächsten freien Brick
+  const col = 0;
+  const text = textInput.value.trim();
+  const tier = selectedTier;
+
+  if (text.length < 1 || text.length > 6) {
+    alert("Text must be 1–6 characters");
+    return;
+  }
+
+  try {
+    // Supabase Edge Function aufrufen
+    const { data, error } = await supabase.functions.invoke(
+      "create-brick",
+      { body: { row, col, text, tier } }
+    );
+
+    if (error) throw error;
+
+    const { clientSecret } = data;
+    console.log("CLIENT SECRET:", clientSecret);
+
+    // Stripe Elements aufbauen
+    elements = stripe.elements({ clientSecret });
+    paymentElement = elements.create("payment");
+    paymentElement.mount("#payment-element");
+
+    // Payment Overlay anzeigen
+    paymentOverlay.style.display = "flex";
+
+  } catch (err) {
+    console.error("Payment failed:", err);
+    alert("Payment failed. See console.");
+  }
+});
+
+
+
 </script>
+
+
+
 
 </body>
 </html>
+
