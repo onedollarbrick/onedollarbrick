@@ -406,7 +406,7 @@ const redirectStatus = urlParams.get("redirect_status");
 if (redirectStatus === "succeeded") {
 
   const saved = localStorage.getItem("pendingBrick");
-
+  
   if (saved) {
 
     const { row, col, text, tier } = JSON.parse(saved);
