@@ -154,7 +154,7 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   <button class="tshare" onclick="showLove()">🤍 Show some love</button>
 <input id="textInput" placeholder="Text (6)" maxlength="6">
 
-<button id="setBrickBtn">SET BRICK</button>
+<button id="setBrickBtn">PAY & SET BRICK</button>
 
 </div>
 
@@ -406,7 +406,7 @@ const redirectStatus = urlParams.get("redirect_status");
 if (redirectStatus === "succeeded") {
 
   const saved = localStorage.getItem("pendingBrick");
-  
+
   if (saved) {
 
     const { row, col, text, tier } = JSON.parse(saved);
@@ -556,36 +556,39 @@ window.armBrick = () => {
 
 
 
-async function placeBrick(brick) {
-  console.log("🔥 INVOKE VERSION LOADED");
+function placeBrick(brick) {
 
-  console.log("placeBrick() reached");
+  if (brick.classList.contains("placed")) {
+    alert("This brick is already taken");
+    return;
+  }
 
   const text = textInput.value.trim();
 
   if (text.length < 1 || text.length > 6) {
     alert("Text must be 1–6 characters");
-    armed = false;
-    document.body.style.cursor = "";
     return;
   }
 
-  if (!armed) {
-    alert("Click SET BRICK first");
-    return;
-  }
+  // vorherige Auswahl entfernen
+  document.querySelectorAll(".brick.preview")
+    .forEach(b => b.classList.remove("preview"));
 
-  if (brick.classList.contains("placed")) {
-    return;
-  }
-
-
+  brick.classList.add("preview");
 
   const row = Number(brick.dataset.row);
   const col = Number(brick.dataset.col);
-  const tier = selectedTier;
 
-  console.log("SENDING TO STRIPE:", { row, col, text, tier });
+  pendingBrick = {
+    brick,
+    row,
+    col,
+    text,
+    tier: selectedTier
+  };
+
+  console.log("Brick selected:", pendingBrick);
+}
 
 try {
   // Brick merken
@@ -732,18 +735,63 @@ if (error) {
 
 };
 
-document.getElementById("setBrickBtn").onclick = () => {
-  const text = textInput.value.trim();
+document.getElementById("setBrickBtn").onclick = async () => {
 
-  if (text.length < 1 || text.length > 6) {
-    alert("Text must be 1–6 characters");
+  if (!pendingBrick) {
+    alert("Please select a brick first");
     return;
   }
 
-  armed = true;
-  document.body.style.cursor = "crosshair";
+  const { row, col, text, tier } = pendingBrick;
 
-  alert("Now click a brick on the wall");
+  console.log("Sending to Stripe:", pendingBrick);
+
+  try {
+
+    brickToSet = pendingBrick;
+
+    localStorage.setItem("pendingBrick", JSON.stringify({
+      row,
+      col,
+      text,
+      tier
+    }));
+
+    const { data, error } = await supabase.functions.invoke(
+      "create-brick",
+      {
+        body: {
+          row,
+          col,
+          text,
+          tier
+        }
+      }
+    );
+
+    if (error) {
+      console.error(error);
+      alert("Payment failed");
+      return;
+    }
+
+    const { clientSecret } = data;
+
+    paymentOverlay.style.display = "flex";
+
+    elements = stripe.elements({ clientSecret });
+
+    const container = document.getElementById("payment-element");
+    container.innerHTML = "";
+
+    paymentElement = elements.create("payment");
+    paymentElement.mount("#payment-element");
+
+  } catch (err) {
+    console.error(err);
+    alert("Payment failed. Try again.");
+  }
+
 };
 
 
