@@ -563,12 +563,6 @@ function placeBrick(brick) {
     return;
   }
 
-  const text = textInput.value.trim();
-
-  if (text.length < 1 || text.length > 6) {
-    alert("Text must be 1–6 characters");
-    return;
-  }
 
   // vorherige Auswahl entfernen
   document.querySelectorAll(".brick.preview")
@@ -679,7 +673,15 @@ document.getElementById("setBrickBtn").onclick = async () => {
     return;
   }
 
-  const { row, col, text, tier } = pendingBrick;
+  const { row, col } = pendingBrick;
+
+const text = textInput.value.trim();
+const tier = selectedTier;
+
+if (text.length < 1 || text.length > 6) {
+  alert("Text must be 1–6 characters");
+  return;
+}
 
   console.log("Sending to Stripe:", pendingBrick);
 
