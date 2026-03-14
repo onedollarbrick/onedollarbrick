@@ -556,15 +556,18 @@ window.armBrick = () => {
 
 
 
-function placeBrick(brick) {
+async function placeBrick(brick) {
 
   if (brick.classList.contains("placed")) {
     alert("This brick is already taken");
     return;
   }
 
+  if (!pendingBrick) {
+    alert("Click PAY & SET BRICK first");
+    return;
+  }
 
-  // vorherige Auswahl entfernen
   document.querySelectorAll(".brick.preview")
     .forEach(b => b.classList.remove("preview"));
 
@@ -573,15 +576,48 @@ function placeBrick(brick) {
   const row = Number(brick.dataset.row);
   const col = Number(brick.dataset.col);
 
-  pendingBrick = {
-    brick,
+  const text = pendingBrick.text;
+  const tier = pendingBrick.tier;
+
+  brickToSet = { brick, row, col, text, tier };
+
+  localStorage.setItem("pendingBrick", JSON.stringify({
     row,
     col,
     text,
-    tier: selectedTier
-  };
+    tier
+  }));
 
-  console.log("Brick selected:", pendingBrick);
+  try {
+
+    const { data, error } = await supabase.functions.invoke(
+      "create-brick",
+      {
+        body: { row, col, text, tier }
+      }
+    );
+
+    if (error) {
+      alert("Payment error");
+      return;
+    }
+
+    const { clientSecret } = data;
+
+    paymentOverlay.style.display = "flex";
+
+    elements = stripe.elements({ clientSecret });
+
+    const container = document.getElementById("payment-element");
+    container.innerHTML = "";
+
+    paymentElement = elements.create("payment");
+    paymentElement.mount("#payment-element");
+
+  } catch (err) {
+    console.error(err);
+    alert("Payment failed");
+  }
 }
 
 
@@ -666,53 +702,29 @@ if (error) {
 
 };
 
-document.getElementById("setBrickBtn").onclick = async () => {
+document.getElementById("setBrickBtn").onclick = () => {
 
-  if (!pendingBrick) {
-    alert("Please select a brick first");
-    return;
+  const text = textInput.value.trim()
+
+  if (text.length < 1 || text.length > 6) {
+    alert("Text must be 1–6 characters")
+    return
   }
 
-  const { row, col } = pendingBrick;
+  if (!selectedTier) {
+    alert("Please select a tier")
+    return
+  }
 
-const text = textInput.value.trim();
-const tier = selectedTier;
+  pendingBrick = {
+    text: text,
+    tier: selectedTier
+  }
 
-if (text.length < 1 || text.length > 6) {
-  alert("Text must be 1–6 characters");
-  return;
+  alert("Now click a brick on the wall")
 }
 
-  console.log("Sending to Stripe:", pendingBrick);
-
-  try {
-
-    brickToSet = pendingBrick;
-
-    localStorage.setItem("pendingBrick", JSON.stringify({
-      row,
-      col,
-      text,
-      tier
-    }));
-
-    const { data, error } = await supabase.functions.invoke(
-      "create-brick",
-      {
-        body: {
-          row,
-          col,
-          text,
-          tier
-        }
-      }
-    );
-
-    if (error) {
-      console.error(error);
-      alert("Payment failed");
-      return;
-    }
+  
 
     const { clientSecret } = data;
 
@@ -744,3 +756,4 @@ if (text.length < 1 || text.length > 6) {
 </body>
 </html>
 
+1
