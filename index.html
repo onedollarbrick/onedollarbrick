@@ -154,7 +154,7 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   <button class="tshare" onclick="showLove()">🤍 Show some love</button>
 <input id="textInput" placeholder="Text (6)" maxlength="6">
 
-<button id="setBrickBtn">SET BRICK</button>
+<button id="setBrickBtn">PAY & SET BRICK</button>
 
 </div>
 
@@ -399,6 +399,47 @@ Payments are processed via Stripe.
 </div>
 <script type="module">
   console.log("SCRIPT STARTED");
+  // ✅ Stripe Redirect Handling
+const urlParams = new URLSearchParams(window.location.search);
+const redirectStatus = urlParams.get("redirect_status");
+
+if (redirectStatus === "succeeded") {
+
+  const saved = localStorage.getItem("pendingBrick");
+
+  if (saved) {
+
+    const { row, col, text, tier } = JSON.parse(saved);
+
+    const brick = document.querySelector(
+      `.brick[data-row="${row}"][data-col="${col}"]`
+    );
+    
+if (brick) {
+  brick.textContent = text;
+  brick.classList.add("placed");
+
+  brick.style.background =
+    tier === 1 ? "#f2c94c" :
+    tier === 5 ? "#f2994a" :
+    "#5fb3ff";
+
+  brick.style.color = "#000";
+
+  bricksPlaced++;
+  brickCount.textContent = bricksPlaced;
+  progressFill.style.width =
+    (bricksPlaced / 1000000 * 100) + "%";
+  updateMilestones();
+}
+
+    localStorage.removeItem("pendingBrick");
+  }
+
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  alert("Payment successful! Your brick was placed.");
+}
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -422,10 +463,14 @@ const stripe = window.Stripe(stripeKey);
 let elements;
 let paymentElement;
 let currentClientSecret;
+let brickToSet = null; // Speichert den Brick, der nach Zahlung gesetzt werden soll
+
 
 const wall=document.getElementById("wall");
 const rowsStart=7, cols=14;
 let armed = false;
+let pendingBrick = null;
+
 let bricksPlaced = 0;
 let selectedTier = 1;
 
@@ -449,17 +494,21 @@ const payBtn = document.getElementById("payBtn");
 const paymentClose = document.getElementById("paymentClose");
 
 
-for(let r=0;r<rowsStart;r++) addRow();
+for(let r=0;r<rowsStart;r++) addRow(r);
 
-function addRow(){
+function addRow(r){
   const row=document.createElement("div");
   row.className="row";
   if(wall.children.length%2===1) row.classList.add("offset");
   for(let c=0;c<cols;c++){
-    const b=document.createElement("div");
-    b.className="brick";
+  const b=document.createElement("div");
+  b.className="brick";
+
+  // ✅ WICHTIG: Position speichern
+  b.dataset.row = r;
+  b.dataset.col = c;
     b.onclick=()=>placeBrick(b);
-    b.onmouseenter=()=>armed&&!b.classList.contains("placed")&&b.classList.add("preview");
+    b.onmouseenter=()=>!b.classList.contains("placed")&&b.classList.add("preview");
     b.onmouseleave=()=>b.classList.remove("preview");
     row.appendChild(b);
   }
@@ -507,87 +556,33 @@ window.armBrick = () => {
 
 
 
-async function placeBrick(brick) {
-  console.log("🔥 INVOKE VERSION LOADED");
-
-  console.log("placeBrick() reached");
-
-  const text = textInput.value.trim();
-
-  if (text.length < 1 || text.length > 6) {
-    alert("Text must be 1–6 characters");
-    armed = false;
-    document.body.style.cursor = "";
-    return;
-  }
-
-  if (!armed) {
-    alert("Click SET BRICK first");
-    return;
-  }
+function placeBrick(brick) {
 
   if (brick.classList.contains("placed")) {
+    alert("This brick is already taken");
     return;
   }
 
 
+  // vorherige Auswahl entfernen
+  document.querySelectorAll(".brick.preview")
+    .forEach(b => b.classList.remove("preview"));
 
+  brick.classList.add("preview");
 
+  const row = Number(brick.dataset.row);
+  const col = Number(brick.dataset.col);
 
+  pendingBrick = {
+    brick,
+    row,
+    col,
+    text,
+    tier: selectedTier
+  };
 
-
-
-
-  const row = [...wall.children].indexOf(brick.parentElement);
-  const col = [...brick.parentElement.children].indexOf(brick);
-  const tier = selectedTier;
-
-  try {
-// ⚡ Fetch direkt an die Edge Function
-const res = await fetch("https://jftttrosqjvcdgummhlm.supabase.co/functions/v1/create-brick", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ row, col, text, tier }),
-});
-
-const data = await res.json();
-if (!res.ok) {
-  console.error("Edge Function Error:", data);
-  alert("Payment failed. See console.");
-  return;
+  console.log("Brick selected:", pendingBrick);
 }
-
-
-   if (error) {
-  console.error("FUNCTION ERROR:", error);
-  alert("Server error. See console.");
-  armed = false;
-  document.body.style.cursor = "";
-  return;
-}
-
-
-    const { clientSecret } = data;
-    console.log("CLIENT SECRET:", clientSecret);
-
-    currentClientSecret = clientSecret;
-
-    elements = stripe.elements({ clientSecret });
-    paymentElement = elements.create("payment");
-    paymentElement.mount("#payment-element");
-
-    paymentOverlay.style.display = "flex";
-
-  } catch (err) {
-    console.error("UNEXPECTED ERROR:", err);
-    alert("Payment failed. Please try again.");
-    armed = false;
-    document.body.style.cursor = "";
-  }
-}
-
 
 
 
@@ -645,63 +640,99 @@ window.copyLove = () => {
 
 paymentClose.onclick = () => {
   paymentOverlay.style.display = "none";
+  localStorage.removeItem("pendingBrick");
 };
 
 payBtn.onclick = async () => {
-  payBtn.disabled = true;
-
-  console.log("Confirming payment with clientSecret:", currentClientSecret);
-
-  const { error } = await stripe.confirmPayment({
-    elements,
-    confirmParams: {
-      return_url: "https://www.onedollarbrick.com"
-
-    }
-  });
-
-  if (error) {
-    alert("Stripe error: " + error.message);
-    payBtn.disabled = false;
-  }
-};
-// 🔹 NEU: SET BRICK Button Event Listener
-document.getElementById("setBrickBtn").addEventListener("click", async () => {
-  const row = 0; // Test Brick, später automatisch den nächsten freien Brick
-  const col = 0;
-  const text = textInput.value.trim();
-  const tier = selectedTier;
-
-  if (text.length < 1 || text.length > 6) {
-    alert("Text must be 1–6 characters");
+  if (!brickToSet) {
+    alert("No brick selected");
     return;
   }
 
+  payBtn.disabled = true;
+
+ const { error } = await stripe.confirmPayment({
+  elements,
+  confirmParams: {
+    return_url: window.location.href
+  },
+redirect: "always"
+});
+
+if (error) {
+    alert("Stripe error: " + error.message);
+    payBtn.disabled = false;
+  }
+
+};
+
+document.getElementById("setBrickBtn").onclick = async () => {
+
+  if (!pendingBrick) {
+    alert("Please select a brick first");
+    return;
+  }
+
+  const { row, col } = pendingBrick;
+
+const text = textInput.value.trim();
+const tier = selectedTier;
+
+if (text.length < 1 || text.length > 6) {
+  alert("Text must be 1–6 characters");
+  return;
+}
+
+  console.log("Sending to Stripe:", pendingBrick);
+
   try {
-    // Supabase Edge Function aufrufen
+
+    brickToSet = pendingBrick;
+
+    localStorage.setItem("pendingBrick", JSON.stringify({
+      row,
+      col,
+      text,
+      tier
+    }));
+
     const { data, error } = await supabase.functions.invoke(
       "create-brick",
-      { body: { row, col, text, tier } }
+      {
+        body: {
+          row,
+          col,
+          text,
+          tier
+        }
+      }
     );
 
-    if (error) throw error;
+    if (error) {
+      console.error(error);
+      alert("Payment failed");
+      return;
+    }
 
     const { clientSecret } = data;
-    console.log("CLIENT SECRET:", clientSecret);
 
-    // Stripe Elements aufbauen
+    paymentOverlay.style.display = "flex";
+
     elements = stripe.elements({ clientSecret });
+
+    const container = document.getElementById("payment-element");
+    container.innerHTML = "";
+
     paymentElement = elements.create("payment");
     paymentElement.mount("#payment-element");
 
-    // Payment Overlay anzeigen
-    paymentOverlay.style.display = "flex";
-
   } catch (err) {
-    console.error("Payment failed:", err);
-    alert("Payment failed. See console.");
+    console.error(err);
+    alert("Payment failed. Try again.");
   }
-});
+
+};
+
 
 
 
