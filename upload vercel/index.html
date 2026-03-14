@@ -726,27 +726,6 @@ document.getElementById("setBrickBtn").onclick = () => {
 
   
 
-    const { clientSecret } = data;
-
-    paymentOverlay.style.display = "flex";
-
-    elements = stripe.elements({ clientSecret });
-
-    const container = document.getElementById("payment-element");
-    container.innerHTML = "";
-
-    paymentElement = elements.create("payment");
-    paymentElement.mount("#payment-element");
-
-  } catch (err) {
-    console.error(err);
-    alert("Payment failed. Try again.");
-  }
-
-};
-
-
-
 
 </script>
 
@@ -756,4 +735,3 @@ document.getElementById("setBrickBtn").onclick = () => {
 </body>
 </html>
 
-1
