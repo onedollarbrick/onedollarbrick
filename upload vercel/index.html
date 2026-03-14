@@ -508,7 +508,7 @@ function addRow(r){
   b.dataset.row = r;
   b.dataset.col = c;
     b.onclick=()=>placeBrick(b);
-    b.onmouseenter=()=>armed&&!b.classList.contains("placed")&&b.classList.add("preview");
+    b.onmouseenter=()=>!b.classList.contains("placed")&&b.classList.add("preview");
     b.onmouseleave=()=>b.classList.remove("preview");
     row.appendChild(b);
   }
@@ -588,69 +588,6 @@ function placeBrick(brick) {
   };
 
   console.log("Brick selected:", pendingBrick);
-}
-
-try {
-  // Brick merken
-brickToSet = { brick, text, tier };
-
-localStorage.setItem("pendingBrick", JSON.stringify({
-  row,
-  col,
-  text,
-  tier
-}));
-
-  // 🔴 Stripe PaymentIntent holen
-const { data, error } = await supabase.functions.invoke(
-  "create-brick",
-  {
-    body: {
-      row,
-      col,
-      text,
-      tier
-    }
-  }
-);
-
-
-if (error) {
-  console.error("Edge Function Error:", error);
-  alert("Payment failed");
-  return;
-}
-
-const { clientSecret } = data;
-console.log("CLIENT SECRET:", clientSecret);
-
-
-
-// ✅ 1. Overlay ZUERST sichtbar machen
-paymentOverlay.style.display = "flex";
-
-// 🧠 2. Stripe Elements aufbauen
-elements = stripe.elements({ clientSecret });
-
-// 3. Container leeren
-const container = document.getElementById("payment-element");
-container.innerHTML = "";
-
-// 4. Payment Element mounten
-paymentElement = elements.create("payment");
-paymentElement.mount("#payment-element");
-
-// 5. State reset
-armed = false;
-document.body.style.cursor = "";
-
-} catch (err) {
-  console.error("UNEXPECTED ERROR:", err);
-  alert("Payment failed. Please try again.");
-  armed = false;
-  document.body.style.cursor = "";
-
-}
 }
 
 
