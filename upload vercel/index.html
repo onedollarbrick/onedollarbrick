@@ -418,6 +418,10 @@ if (redirectStatus === "succeeded") {
 if (brick) {
   brick.textContent = text;
   brick.classList.add("placed");
+  brick.scrollIntoView({
+  behavior: "smooth",
+  block: "center"
+});
 
   brick.style.background =
     tier === 1 ? "#f2c94c" :
