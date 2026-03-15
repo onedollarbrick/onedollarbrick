@@ -448,7 +448,7 @@ checkWallExpansion();
 
   window.history.replaceState({}, document.title, window.location.pathname);
 
-  if(confirm("Payment successful! Share your brick?")){
+if(confirm("Payment successful! Share your brick?")){
   const text = encodeURIComponent(
     `I just placed a brick on the wall 🧱\n${text}\n\nCan the internet buy peace for $1?\n${location.href}`
   );
