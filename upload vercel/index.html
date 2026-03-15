@@ -417,7 +417,9 @@ if (redirectStatus === "succeeded") {
     
 if (brick) {
   brick.textContent = text;
-  brick.classList.add("placed");
+brick.classList.add("placed");
+
+checkWallExpansion();
   brick.scrollIntoView({
   behavior: "smooth",
   block: "center"
@@ -472,6 +474,7 @@ let brickToSet = null; // Speichert den Brick, der nach Zahlung gesetzt werden s
 
 const wall=document.getElementById("wall");
 const rowsStart=7, cols=14;
+let totalRows = rowsStart;
 let armed = false;
 let pendingBrick = null;
 
@@ -518,7 +521,19 @@ function addRow(r){
   }
   wall.appendChild(row);
 }
+function checkWallExpansion(){
 
+  const freeBricks = document.querySelectorAll(".brick:not(.placed)");
+
+  if(freeBricks.length === 0){
+
+    addRow(totalRows);
+
+    totalRows++;
+
+  }
+
+}
 const { data=[] } = await supabase.from("bricks").select("row, col, text, tier")
 
 data.forEach(b => {
