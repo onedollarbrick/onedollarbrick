@@ -147,9 +147,13 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 <div id="aboutToggle">About</div>
 
 <div class="controls">
-  <button class="t1 active" onclick="selectTier(this)">1$</button>
-  <button class="t5" onclick="selectTier(this)">5$</button>
-  <button class="t10" onclick="selectTier(this)">10$</button>
+  <button class="t1 active" onclick="selectTier(1)">1$</button>
+
+<input id="customAmount" 
+       placeholder="Custom $" 
+       type="number" 
+       min="1" 
+       style="width:100px">
   <button class="tmore" onclick="showMore()">more?</button>
   <button class="tshare" onclick="showLove()">🤍 Show some love</button>
 <input id="textInput" placeholder="Text (6)" maxlength="6">
@@ -555,14 +559,13 @@ updateMilestones();
 
 
 
-window.selectTier = el => {
-document.querySelectorAll(".controls .t1, .controls .t5, .controls .t10")
-  .forEach(b => b.classList.remove("active"));
+window.selectTier = amount => {
+  selectedTier = amount;
 
-  el.classList.add("active");
+  document.querySelectorAll(".controls button")
+    .forEach(b => b.classList.remove("active"));
 
-  const value = el.innerText.replace("$", "");
-  selectedTier = Number(value);
+  document.querySelector(".t1").classList.add("active");
 };
 
 
@@ -739,10 +742,19 @@ document.getElementById("setBrickBtn").onclick = () => {
     return
   }
 
-  pendingBrick = {
-    text: text,
-    tier: selectedTier
-  }
+  const custom = Number(document.getElementById("customAmount").value);
+
+const amount = custom > 0 ? custom : selectedTier;
+
+const customInput = document.getElementById("customAmount");
+const customValue = Number(customInput.value);
+
+const amount = customValue > 0 ? customValue : selectedTier;
+
+pendingBrick = {
+  text: text,
+  tier: amount
+};
 
   alert("Select a brick on the wall")
 }
