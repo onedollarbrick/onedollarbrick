@@ -749,11 +749,11 @@ const amount = custom > 0 ? custom : selectedTier;
 const customInput = document.getElementById("customAmount");
 const customValue = Number(customInput.value);
 
-const amount = customValue > 0 ? customValue : selectedTier;
+const brickAmount = customValue > 0 ? customValue : selectedTier;
 
 pendingBrick = {
   text: text,
-  tier: amount
+  tier: brickAmount
 };
 
   alert("Select a brick on the wall")
