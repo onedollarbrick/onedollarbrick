@@ -767,6 +767,7 @@ supabase
 
       brick.textContent = b.text;
       brick.classList.add("placed");
+      checkWallExpansion();
 
       brick.style.background =
         b.tier === 1 ? "#f2c94c" :
