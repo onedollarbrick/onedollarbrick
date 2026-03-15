@@ -539,8 +539,12 @@ const { data=[] } = await supabase.from("bricks").select("row, col, text, tier")
 data.forEach(b => {
   const brick=wall.children[b.row]?.children[b.col];
   if(!brick) return;
+
   brick.textContent=b.text;
   brick.classList.add("placed");
+
+  checkWallExpansion();
+
   brick.style.background=b.tier===1?"#f2c94c":b.tier===5?"#f2994a":"#5fb3ff";
   brick.style.color="#000";
 });
@@ -740,7 +744,7 @@ document.getElementById("setBrickBtn").onclick = () => {
     tier: selectedTier
   }
 
-  alert("Now click a brick on the wall")
+  alert("Select a brick on the wall")
 }
 
   
