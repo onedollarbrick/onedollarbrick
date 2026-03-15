@@ -448,7 +448,12 @@ checkWallExpansion();
 
   window.history.replaceState({}, document.title, window.location.pathname);
 
-  alert("Payment successful! Your brick was placed.");
+  if(confirm("Payment successful! Share your brick?")){
+  const text = encodeURIComponent(
+    `I just placed a brick on the wall 🧱\n${text}\n\nCan the internet buy peace for $1?\n${location.href}`
+  );
+
+  window.open(`https://x.com/intent/tweet?text=${text}`, "_blank");
 }
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
