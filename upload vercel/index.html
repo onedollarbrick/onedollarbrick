@@ -746,7 +746,44 @@ document.getElementById("setBrickBtn").onclick = () => {
 
   alert("Select a brick on the wall")
 }
+supabase
+  .channel("bricks-live")
+  .on(
+    "postgres_changes",
+    {
+      event: "INSERT",
+      schema: "public",
+      table: "bricks"
+    },
+    payload => {
 
+      const b = payload.new;
+
+      const brick = document.querySelector(
+        `.brick[data-row="${b.row}"][data-col="${b.col}"]`
+      );
+
+      if (!brick) return;
+
+      brick.textContent = b.text;
+      brick.classList.add("placed");
+
+      brick.style.background =
+        b.tier === 1 ? "#f2c94c" :
+        b.tier === 5 ? "#f2994a" :
+        "#5fb3ff";
+
+      brick.style.color = "#000";
+
+      bricksPlaced++;
+      brickCount.textContent = bricksPlaced;
+      progressFill.style.width =
+        (bricksPlaced / 1000000 * 100) + "%";
+
+      updateMilestones();
+    }
+  )
+  .subscribe();
   
 
 
