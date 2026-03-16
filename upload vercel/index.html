@@ -56,7 +56,7 @@ button{
   cursor:pointer;
 }
 button.active{outline:3px solid #fff}
-.t1{background:#f2c94c;color:#1a1a1a}
+.t1{background:#f2994a;color:#1a1a1a}
 .t5{background:#f2994a;color:#1a1a1a}
 .t10{background:#5fb3ff;color:#0e0e11}
 .tmore{background:linear-gradient(135deg,#e0e0e0,#bdbdbd);color:#1a1a1a}
@@ -606,7 +606,7 @@ data.forEach(b => {
 
   checkWallExpansion();
 
-  brick.style.background=b.tier===1?"#f2c94c":b.tier===5?"#f2994a":"#5fb3ff";
+  brick.style.background=b.tier===1?"#f2994a":b.tier===5?"#f2994a":"#5fb3ff";
   brick.style.color="#000";
 });
 bricksPlaced=data.length;
@@ -837,7 +837,7 @@ supabase
       checkWallExpansion();
 
       brick.style.background =
-        b.tier === 1 ? "#f2c94c" :
+        b.tier === 1 ? "#f2994a" :
         b.tier === 5 ? "#f2994a" :
         "#5fb3ff";
 
@@ -863,7 +863,7 @@ supabase
   ctx.fillRect(0,0,400,200);
 
   // Brick
-  ctx.fillStyle = "#f2c94c";
+  ctx.fillStyle = "#f2994a";
   ctx.fillRect(100,70,200,60);
 
   // Brick Highlight (oben)
