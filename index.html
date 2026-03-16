@@ -848,24 +848,37 @@ supabase
   )
   .subscribe();
 
-  function generateBrickImage(text){
+ function generateBrickImage(text){
 
   const canvas = document.getElementById("brickImage");
   const ctx = canvas.getContext("2d");
 
-  ctx.fillStyle = "#111";
+  // Hintergrund
+  ctx.fillStyle = "#0e0e11";
   ctx.fillRect(0,0,400,200);
 
+  // Brick
   ctx.fillStyle = "#f2c94c";
-  ctx.fillRect(80,70,240,60);
+  ctx.fillRect(100,70,200,60);
 
+  // Brick Highlight (oben)
+  ctx.fillStyle = "#ffe27a";
+  ctx.fillRect(100,70,200,8);
+
+  // Brick Shadow (unten)
+  ctx.fillStyle = "#c9a53a";
+  ctx.fillRect(100,122,200,8);
+
+  // Text im Brick
   ctx.fillStyle = "#000";
-  ctx.font = "bold 20px Arial";
+  ctx.font = "14px 'Press Start 2P'";
   ctx.textAlign = "center";
-  ctx.fillText(text,200,105);
+  ctx.textBaseline = "middle";
+  ctx.fillText(text,200,100);
 
-  ctx.fillStyle = "#fff";
-  ctx.font = "12px Arial";
+  // URL unten
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "10px 'Press Start 2P'";
   ctx.fillText("onedollarbrick.com",200,170);
 
 }
