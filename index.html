@@ -498,14 +498,6 @@ checkWallExpansion();
 
   window.history.replaceState({}, document.title, window.location.pathname);
 
-document.getElementById("shareBrickText").innerText =
-`"${shareTextValue}"
-
-I just placed a brick on the wall 🧱
-Can the internet buy peace for $1?
-
-onedollarbrick.com`;
-
 document.getElementById("shareOverlay").style.display = "flex";
 generateBrickImage(shareTextValue);
 
