@@ -357,7 +357,53 @@ Payments are processed via Stripe.
   </div>
 </div>
 
+<!-- SHARE BRICK OVERLAY -->
+<div id="shareOverlay" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+">
+  <div style="
+    background:#0f1511;
+    border:2px solid #6fcf97;
+    border-radius:16px;
+    padding:30px;
+    max-width:520px;
+    width:90%;
+    color:#6fcf97;
+    text-align:center;
+    font-family:'Press Start 2P', monospace;
+  ">
 
+    <div style="font-size:18px;margin-bottom:20px;">
+      Your brick was placed 🧱
+    </div>
+
+    <div id="shareBrickText" style="
+      background:#000;
+      border-radius:10px;
+      padding:18px;
+      font-family:Arial,sans-serif;
+      margin-bottom:20px;
+      color:#fff;
+    ">
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:18px;">
+      <button onclick="shareBrick()">Share on X</button>
+      <button onclick="copyBrick()">Copy text</button>
+    </div>
+
+    <div id="shareClose" style="cursor:pointer;font-size:14px;">
+      Close
+    </div>
+
+  </div>
+</div>
 
 
 <!-- PAYMENT OVERLAY -->
@@ -406,6 +452,7 @@ Payments are processed via Stripe.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 console.log("SCRIPT STARTED");
+let shareTextValue = "";
   
   // ✅ Stripe Redirect Handling
 const urlParams = new URLSearchParams(window.location.search);
@@ -420,7 +467,7 @@ if (redirectStatus === "succeeded") {
    const savedBrick = JSON.parse(saved);
 const { row, col, text, tier } = savedBrick;
 
-let shareTextValue = text;
+shareTextValue = text;
 
     const brick = document.querySelector(
       `.brick[data-row="${row}"][data-col="${col}"]`
@@ -455,19 +502,15 @@ checkWallExpansion();
 
   window.history.replaceState({}, document.title, window.location.pathname);
 
-if(confirm("Payment successful! Share your brick?")){
+document.getElementById("shareBrickText").innerText =
+`"${shareTextValue}"
 
-  const shareText = encodeURIComponent(
-`I just placed a brick on the wall 🧱
-
-"${shareTextValue}"
-
+I just placed a brick on the wall 🧱
 Can the internet buy peace for $1?
-${location.href}`
-  );
 
- window.open(`https://x.com/intent/tweet?text=${shareText}`, "_blank");
-}
+onedollarbrick.com`;
+
+document.getElementById("shareOverlay").style.display = "flex";
 
 }   
 
