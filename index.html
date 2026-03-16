@@ -471,6 +471,11 @@ shareTextValue = text;
     
 if (brick) {
   brick.textContent = text;
+  if(/\p{Emoji}/u.test(text)){
+  brick.style.fontSize = "28px";
+}else{
+  brick.style.fontSize = "14px";
+}
 brick.classList.add("placed");
 
 checkWallExpansion();
@@ -480,9 +485,9 @@ checkWallExpansion();
 });
 
   brick.style.background =
-    tier === 1 ? "#f2c94c" :
-    tier === 5 ? "#f2994a" :
-    "#5fb3ff";
+  tier === 1 ? "#f2994a" :
+  tier === 5 ? "#f2c94c" :
+  "#5fb3ff";
 
   brick.style.color = "#000";
 
