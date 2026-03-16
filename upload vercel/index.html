@@ -383,15 +383,11 @@ Payments are processed via Stripe.
       Your brick was placed 🧱
     </div>
 
-    <div id="shareBrickText" style="
-      background:#000;
-      border-radius:10px;
-      padding:18px;
-      font-family:Arial,sans-serif;
-      margin-bottom:20px;
-      color:#fff;
-    ">
-    </div>
+    <canvas id="brickImage" width="400" height="200" style="
+background:#000;
+border-radius:10px;
+margin-bottom:20px;
+"></canvas>
 
     <div style="display:flex;gap:12px;justify-content:center;margin-bottom:18px;">
       <button onclick="shareBrick()">Share on X</button>
@@ -511,6 +507,7 @@ Can the internet buy peace for $1?
 onedollarbrick.com`;
 
 document.getElementById("shareOverlay").style.display = "flex";
+generateBrickImage(shareTextValue);
 
 }   
 
@@ -858,8 +855,68 @@ supabase
     }
   )
   .subscribe();
-  
 
+  function generateBrickImage(text){
+
+  const canvas = document.getElementById("brickImage");
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "#111";
+  ctx.fillRect(0,0,400,200);
+
+  ctx.fillStyle = "#f2c94c";
+  ctx.fillRect(80,70,240,60);
+
+  ctx.fillStyle = "#000";
+  ctx.font = "bold 20px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(text,200,105);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "12px Arial";
+  ctx.fillText("onedollarbrick.com",200,170);
+
+}
+  
+// SHARE OVERLAY FUNCTIONS
+
+const shareOverlay = document.getElementById("shareOverlay");
+const shareClose = document.getElementById("shareClose");
+
+shareClose.onclick = () => {
+  shareOverlay.style.display = "none";
+};
+
+window.shareBrick = () => {
+
+  const text = encodeURIComponent(
+`"${shareTextValue}"
+
+I just placed a brick on the wall 🧱
+Can the internet buy peace for $1?
+
+onedollarbrick.com`
+  );
+
+  window.open(`https://x.com/intent/tweet?text=${text}`, "_blank");
+
+  shareOverlay.style.display = "none";
+};
+
+window.copyBrick = () => {
+
+  const text =
+`"${shareTextValue}"
+
+I just placed a brick on the wall 🧱
+Can the internet buy peace for $1?
+
+onedollarbrick.com`;
+
+  navigator.clipboard.writeText(text);
+
+  alert("Copied!");
+};
 
 </script>
 
