@@ -402,7 +402,11 @@ Payments are processed via Stripe.
   </div>
 </div>
 <script type="module">
-  console.log("SCRIPT STARTED");
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+console.log("SCRIPT STARTED");
+  
   // ✅ Stripe Redirect Handling
 const urlParams = new URLSearchParams(window.location.search);
 const redirectStatus = urlParams.get("redirect_status");
@@ -413,8 +417,10 @@ if (redirectStatus === "succeeded") {
 
   if (saved) {
 
-    const savedBrick = JSON.parse(saved);
+   const savedBrick = JSON.parse(saved);
 const { row, col, text, tier } = savedBrick;
+
+let shareTextValue = text;
 
     const brick = document.querySelector(
       `.brick[data-row="${row}"][data-col="${col}"]`
@@ -454,7 +460,7 @@ if(confirm("Payment successful! Share your brick?")){
   const shareText = encodeURIComponent(
 `I just placed a brick on the wall 🧱
 
-"${text}"
+"${shareTextValue}"
 
 Can the internet buy peace for $1?
 ${location.href}`
@@ -465,9 +471,7 @@ ${location.href}`
 
 }   
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabase = createClient(
   "https://jftttrosqjvcdgummhlm.supabase.co",
