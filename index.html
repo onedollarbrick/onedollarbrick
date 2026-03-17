@@ -471,9 +471,20 @@ shareTextValue = text;
     
 if (brick) {
   brick.textContent = text;
-  if(/\p{Emoji}/u.test(text)){
-  brick.style.fontSize = "28px";
-}else{
+const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(text);
+
+if (onlyEmoji) {
+  brick.style.display = "flex";
+  brick.style.alignItems = "center";
+  brick.style.justifyContent = "center";
+
+  if (text.length <= 2) {
+    brick.style.fontSize = "52px"; // 🔥 BONUS
+  } else {
+    brick.style.fontSize = "42px";
+  }
+
+} else {
   brick.style.fontSize = "14px";
 }
 brick.classList.add("placed");
@@ -484,10 +495,8 @@ checkWallExpansion();
   block: "center"
 });
 
-  brick.style.background =
-  tier === 1 ? "#f2994a" :
-  tier === 5 ? "#f2c94c" :
-  "#5fb3ff";
+ brick.style.background =
+  tier === 1 ? "#f2994a" : "#5fb3ff";
 
   brick.style.color = "#000";
 
@@ -603,10 +612,26 @@ data.forEach(b => {
 
   brick.textContent=b.text;
   brick.classList.add("placed");
+ const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(b.text);
+
+if (onlyEmoji) {
+  brick.style.display = "flex";
+  brick.style.alignItems = "center";
+  brick.style.justifyContent = "center";
+
+  if (b.text.length <= 2) {
+    brick.style.fontSize = "52px"; // 🔥 BONUS
+  } else {
+    brick.style.fontSize = "42px";
+  }
+
+} else {
+  brick.style.fontSize = "14px";
+}
 
   checkWallExpansion();
 
-  brick.style.background=b.tier===1?"#f2994a":b.tier===5?"#f2994a":"#5fb3ff";
+  brick.style.background=b.tier===1?"#f2994a":"#5fb3ff";
   brick.style.color="#000";
 });
 bricksPlaced=data.length;
@@ -834,12 +859,26 @@ supabase
 
       brick.textContent = b.text;
       brick.classList.add("placed");
+      const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(b.text);
+
+if (onlyEmoji) {
+  brick.style.display = "flex";
+  brick.style.alignItems = "center";
+  brick.style.justifyContent = "center";
+
+  if (b.text.length <= 2) {
+    brick.style.fontSize = "52px"; // 🔥 BONUS
+  } else {
+    brick.style.fontSize = "42px";
+  }
+
+} else {
+  brick.style.fontSize = "14px";
+}
       checkWallExpansion();
 
       brick.style.background =
-        b.tier === 1 ? "#f2994a" :
-        b.tier === 5 ? "#f2994a" :
-        "#5fb3ff";
+  tier === 1 ? "#f2994a" : "#5fb3ff";
 
       brick.style.color = "#000";
 
