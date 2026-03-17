@@ -450,11 +450,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 console.log("SCRIPT STARTED");
 let shareTextValue = "";
   
-  // ✅ Stripe Redirect Handling
-const urlParams = new URLSearchParams(window.location.search);
-const redirectStatus = urlParams.get("redirect_status");
-
-if (redirectStatus === "succeeded") {
 
   const saved = localStorage.getItem("pendingBrick");
 
@@ -462,7 +457,6 @@ if (redirectStatus === "succeeded") {
 
   const savedBrick = JSON.parse(saved);
 
-  await supabase.from("bricks").insert([savedBrick]); // 🔥 NEU
 
   const { row, col, text, tier } = savedBrick;
 
@@ -577,6 +571,11 @@ const paymentClose = document.getElementById("paymentClose");
 
 
 for(let r=0;r<rowsStart;r++) addRow(r);
+  // ✅ Stripe Redirect Handling
+const urlParams = new URLSearchParams(window.location.search);
+const redirectStatus = urlParams.get("redirect_status");
+
+if (redirectStatus === "succeeded") {
 
 function addRow(r){
   const row=document.createElement("div");
@@ -679,7 +678,7 @@ async function placeBrick(brick) {
   }
 
   if (!pendingBrick) {
-    alert("Click PAY & SET BRICK first");
+    alert("Click PLACE A BRICK first");
     return;
   }
 
