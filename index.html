@@ -478,10 +478,12 @@ if (onlyEmoji) {
   brick.style.alignItems = "center";
   brick.style.justifyContent = "center";
 
-  if (text.length <= 2) {
-    brick.style.fontSize = "52px"; // 🔥 BONUS
+ const emojiCount = [...text].length;
+
+if (emojiCount <= 2) {
+    brick.style.fontSize = "46px"; // 🔥 BONUS
   } else {
-    brick.style.fontSize = "42px";
+    brick.style.fontSize = "36px";
   }
 
 } else {
@@ -496,7 +498,7 @@ checkWallExpansion();
 });
 
  brick.style.background =
-  tier === 1 ? "#f2994a" : "#5fb3ff";
+  b.tier === 1 ? "#f2994a" : "#5fb3ff";
 
   brick.style.color = "#000";
 
@@ -620,9 +622,9 @@ if (onlyEmoji) {
   brick.style.justifyContent = "center";
 
   if (b.text.length <= 2) {
-    brick.style.fontSize = "52px"; // 🔥 BONUS
+    brick.style.fontSize = "46px"; // 🔥 BONUS
   } else {
-    brick.style.fontSize = "42px";
+    brick.style.fontSize = "36px";
   }
 
 } else {
@@ -824,12 +826,13 @@ document.getElementById("setBrickBtn").onclick = () => {
     return
   }
 
-  const custom = Number(document.getElementById("customAmount").value);
+const customValue = Number(document.getElementById("customAmount").value);
 
-const customInput = document.getElementById("customAmount");
-const customValue = Number(customInput.value);
+let brickAmount = selectedTier;
 
-const brickAmount = customValue > 0 ? customValue : selectedTier;
+if (customValue && customValue >= 1) {
+  brickAmount = customValue;
+}
 
 pendingBrick = {
   text: text,
@@ -867,9 +870,9 @@ if (onlyEmoji) {
   brick.style.justifyContent = "center";
 
   if (b.text.length <= 2) {
-    brick.style.fontSize = "52px"; // 🔥 BONUS
+    brick.style.fontSize = "46px"; // 🔥 BONUS
   } else {
-    brick.style.fontSize = "42px";
+    brick.style.fontSize = "36px";
   }
 
 } else {
