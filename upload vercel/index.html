@@ -449,73 +449,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 console.log("SCRIPT STARTED");
 let shareTextValue = "";
-  
-
-  const saved = localStorage.getItem("pendingBrick");
-
-  if (saved) {
-
-  const savedBrick = JSON.parse(saved);
-
-
-  const { row, col, text, tier } = savedBrick;
-
-shareTextValue = text;
-
-    const brick = document.querySelector(
-      `.brick[data-row="${row}"][data-col="${col}"]`
-    );
-    
-if (brick) {
-  brick.textContent = text;
-const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(text);
-
-if (onlyEmoji) {
-  brick.style.display = "flex";
-  brick.style.alignItems = "center";
-  brick.style.justifyContent = "center";
-
- const emojiCount = [...text].length;
-
-if (emojiCount <= 2) {
-    brick.style.fontSize = "46px"; // 🔥 BONUS
-  } else {
-    brick.style.fontSize = "36px";
-  }
-
-} else {
-  brick.style.fontSize = "14px";
-}
-brick.classList.add("placed");
-
-checkWallExpansion();
-  brick.scrollIntoView({
-  behavior: "smooth",
-  block: "center"
-});
-
- brick.style.background =
-  tier === 1 ? "#f2994a" : "#5fb3ff";
-
-  brick.style.color = "#000";
-
-  bricksPlaced++;
-  brickCount.textContent = bricksPlaced;
-  progressFill.style.width =
-    (bricksPlaced / 1000000 * 100) + "%";
-  updateMilestones();
-}
-
-    localStorage.removeItem("pendingBrick");
-  }
-
-  window.history.replaceState({}, document.title, window.location.pathname);
-
-document.getElementById("shareOverlay").style.display = "flex";
-generateBrickImage(shareTextValue);
-
-}   
-
 
 
 const supabase = createClient(
@@ -571,30 +504,7 @@ const paymentClose = document.getElementById("paymentClose");
 
 
 for(let r=0;r<rowsStart;r++) addRow(r);
-  // ✅ Stripe Redirect Handling
-const urlParams = new URLSearchParams(window.location.search);
-const redirectStatus = urlParams.get("redirect_status");
 
-if (redirectStatus === "succeeded") {
-
-function addRow(r){
-  const row=document.createElement("div");
-  row.className="row";
-  if(wall.children.length%2===1) row.classList.add("offset");
-  for(let c=0;c<cols;c++){
-  const b=document.createElement("div");
-  b.className="brick";
-
-  // ✅ WICHTIG: Position speichern
-  b.dataset.row = r;
-  b.dataset.col = c;
-    b.onclick=()=>placeBrick(b);
-    b.onmouseenter=()=>!b.classList.contains("placed")&&b.classList.add("preview");
-    b.onmouseleave=()=>b.classList.remove("preview");
-    row.appendChild(b);
-  }
-  wall.appendChild(row);
-}
 function checkWallExpansion(){
 
   const freeBricks = document.querySelectorAll(".brick:not(.placed)");
@@ -884,7 +794,8 @@ if (onlyEmoji) {
   brick.style.alignItems = "center";
   brick.style.justifyContent = "center";
 
- b.text.length
+ const emojiCount = [...b.text].length;
+brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
 
 } else {
   brick.style.fontSize = "14px";
@@ -980,6 +891,61 @@ onedollarbrick.com`;
 
   alert("Copied!");
 };
+// ✅ STRIPE REDIRECT (GANZ AM ENDE!!!)
+const urlParams = new URLSearchParams(window.location.search);
+const redirectStatus = urlParams.get("redirect_status");
+
+if (redirectStatus === "succeeded") {
+
+  const saved = localStorage.getItem("pendingBrick");
+
+  if (saved) {
+
+    const savedBrick = JSON.parse(saved);
+    const { row, col, text, tier } = savedBrick;
+
+    shareTextValue = text;
+
+    const brick = document.querySelector(
+      `.brick[data-row="${row}"][data-col="${col}"]`
+    );
+
+    if (brick) {
+      brick.textContent = text;
+
+      const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(text);
+
+      if (onlyEmoji) {
+        const emojiCount = [...text].length;
+        brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
+      } else {
+        brick.style.fontSize = "14px";
+      }
+
+      brick.classList.add("placed");
+
+      brick.style.background =
+        tier === 1 ? "#f2994a" : "#5fb3ff";
+
+      brick.style.color = "#000";
+
+      bricksPlaced++;
+      brickCount.textContent = bricksPlaced;
+
+      progressFill.style.width =
+        (bricksPlaced / 1000000 * 100) + "%";
+
+      updateMilestones();
+    }
+
+    localStorage.removeItem("pendingBrick");
+  }
+
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  document.getElementById("shareOverlay").style.display = "flex";
+  generateBrickImage(shareTextValue);
+}
 
 </script>
 
