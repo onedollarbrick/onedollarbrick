@@ -460,8 +460,11 @@ if (redirectStatus === "succeeded") {
 
   if (saved) {
 
-   const savedBrick = JSON.parse(saved);
-const { row, col, text, tier } = savedBrick;
+  const savedBrick = JSON.parse(saved);
+
+  await supabase.from("bricks").insert([savedBrick]); // 🔥 NEU
+
+  const { row, col, text, tier } = savedBrick;
 
 shareTextValue = text;
 
@@ -498,7 +501,7 @@ checkWallExpansion();
 });
 
  brick.style.background =
-  b.tier === 1 ? "#f2994a" : "#5fb3ff";
+  tier === 1 ? "#f2994a" : "#5fb3ff";
 
   brick.style.color = "#000";
 
@@ -621,11 +624,13 @@ if (onlyEmoji) {
   brick.style.alignItems = "center";
   brick.style.justifyContent = "center";
 
-  if (b.text.length <= 2) {
-    brick.style.fontSize = "46px"; // 🔥 BONUS
-  } else {
-    brick.style.fontSize = "36px";
-  }
+  const emojiCount = [...b.text].length;
+
+if (emojiCount <= 2) {
+  brick.style.fontSize = "46px";
+} else {
+  brick.style.fontSize = "36px";
+}
 
 } else {
   brick.style.fontSize = "14px";
@@ -699,7 +704,17 @@ async function placeBrick(brick) {
   }));
 
   try {
+const { data: existing } = await supabase
+  .from("bricks")
+  .select("*")
+  .eq("row", row)
+  .eq("col", col)
+  .maybeSingle();
 
+if (existing) {
+  alert("This brick is already taken");
+  return;
+}
     const { data, error } = await supabase.functions.invoke(
       "create-brick",
       {
@@ -840,6 +855,7 @@ pendingBrick = {
 };
 
   alert("Select a brick on the wall")
+  document.body.style.cursor = "crosshair";
 }
 supabase
   .channel("bricks-live")
@@ -869,19 +885,15 @@ if (onlyEmoji) {
   brick.style.alignItems = "center";
   brick.style.justifyContent = "center";
 
-  if (b.text.length <= 2) {
-    brick.style.fontSize = "46px"; // 🔥 BONUS
-  } else {
-    brick.style.fontSize = "36px";
-  }
+ b.text.length
 
 } else {
   brick.style.fontSize = "14px";
 }
       checkWallExpansion();
 
-      brick.style.background =
-  tier === 1 ? "#f2994a" : "#5fb3ff";
+  brick.style.background =
+  b.tier === 1 ? "#f2994a" : "#5fb3ff";
 
       brick.style.color = "#000";
 
