@@ -483,6 +483,8 @@ let pendingBrick = null;
 let bricksPlaced = 0;
 let selectedTier = 1;
 
+
+
 function updateMilestones(){
   document.querySelectorAll(".milestone").forEach(m => {
     const goal = Number(m.dataset.goal);
@@ -519,7 +521,9 @@ function addRow(r){
 
   wall.appendChild(row);
 } 
-for(let r=0;r<rowsStart;r++) addRow(r);
+for(let r=0;r<rowsStart;r++) {
+  addRow(r);
+}
 
 function checkWallExpansion(){
 
@@ -541,22 +545,32 @@ data.forEach(b => {
   if(!brick) return;
 
   brick.textContent=b.text;
-  brick.classList.add("placed");
+  const content = b.text;
 
-  const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(b.text);
+const hasEmoji = /\p{Emoji}/u.test(content);
+const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(content);
+
+brick.style.display = "flex";
+brick.style.alignItems = "center";
+brick.style.justifyContent = "center";
+brick.style.lineHeight = "1";
 
 if (onlyEmoji) {
-  brick.style.display = "flex";
-  brick.style.alignItems = "center";
-  brick.style.justifyContent = "center";
+  brick.style.fontFamily = "Apple Color Emoji, Segoe UI Emoji, sans-serif";
+  brick.style.fontSize = "26px";
+}
 
-  const emojiCount = [...b.text].length;
-
-  brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
+} else if (hasEmoji) {
+  brick.style.fontFamily = "Arial, sans-serif";
+  brick.style.fontSize = "16px";
 
 } else {
+  brick.style.fontFamily = '"Press Start 2P", monospace';
   brick.style.fontSize = "14px";
 }
+  brick.classList.add("placed");
+
+
 
   checkWallExpansion();
 
@@ -799,21 +813,32 @@ supabase
       if (!brick) return;
 
       brick.textContent = b.text;
-      brick.classList.add("placed");
-      const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(b.text);
+      const content = b.text;
 
-      
+const hasEmoji = /\p{Emoji}/u.test(content);
+const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(content);
+
+brick.style.display = "flex";
+brick.style.alignItems = "center";
+brick.style.justifyContent = "center";
+brick.style.lineHeight = "1";
+
 if (onlyEmoji) {
-  brick.style.display = "flex";
-  brick.style.alignItems = "center";
-  brick.style.justifyContent = "center";
+  brick.style.fontFamily = "Apple Color Emoji, Segoe UI Emoji, sans-serif";
+  brick.style.fontSize = "26px";
+}
 
- const emojiCount = [...b.text].length;
-brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
+} else if (hasEmoji) {
+  brick.style.fontFamily = "Arial, sans-serif";
+  brick.style.fontSize = "16px";
 
 } else {
+  brick.style.fontFamily = '"Press Start 2P", monospace';
   brick.style.fontSize = "14px";
 }
+      brick.classList.add("placed");
+
+
       checkWallExpansion();
 
   brick.style.background =
@@ -926,21 +951,31 @@ if (redirectStatus === "succeeded") {
 
     if (brick) {
       brick.textContent = text;
+      const content = text;
 
-    const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(text);
+const hasEmoji = /\p{Emoji}/u.test(content);
+const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(content);
+
+brick.style.display = "flex";
+brick.style.alignItems = "center";
+brick.style.justifyContent = "center";
+brick.style.lineHeight = "1";
 
 if (onlyEmoji) {
-  brick.style.display = "flex";
-  brick.style.alignItems = "center";
-  brick.style.justifyContent = "center";
+  brick.style.fontFamily = "Apple Color Emoji, Segoe UI Emoji, sans-serif";
+  brick.style.fontSize = "26px";
+}
 
-  const emojiCount = [...text].length;
-
-  brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
+} else if (hasEmoji) {
+  brick.style.fontFamily = "Arial, sans-serif";
+  brick.style.fontSize = "16px";
 
 } else {
+  brick.style.fontFamily = '"Press Start 2P", monospace';
   brick.style.fontSize = "14px";
 }
+
+
 
       brick.classList.add("placed");
 
