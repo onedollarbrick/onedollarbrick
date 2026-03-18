@@ -542,7 +542,8 @@ data.forEach(b => {
 
   brick.textContent=b.text;
   brick.classList.add("placed");
- const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(b.text);
+
+  const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(b.text);
 
 if (onlyEmoji) {
   brick.style.display = "flex";
@@ -551,11 +552,7 @@ if (onlyEmoji) {
 
   const emojiCount = [...b.text].length;
 
-if (emojiCount <= 2) {
-  brick.style.fontSize = "46px";
-} else {
-  brick.style.fontSize = "36px";
-}
+  brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
 
 } else {
   brick.style.fontSize = "14px";
@@ -930,14 +927,20 @@ if (redirectStatus === "succeeded") {
     if (brick) {
       brick.textContent = text;
 
-      const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(text);
+    const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(text);
 
-      if (onlyEmoji) {
-        const emojiCount = [...text].length;
-        brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
-      } else {
-        brick.style.fontSize = "14px";
-      }
+if (onlyEmoji) {
+  brick.style.display = "flex";
+  brick.style.alignItems = "center";
+  brick.style.justifyContent = "center";
+
+  const emojiCount = [...text].length;
+
+  brick.style.fontSize = emojiCount <= 2 ? "46px" : "36px";
+
+} else {
+  brick.style.fontSize = "14px";
+}
 
       brick.classList.add("placed");
 
