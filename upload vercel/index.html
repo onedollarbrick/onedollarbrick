@@ -555,9 +555,13 @@ brick.style.alignItems = "center";
 brick.style.justifyContent = "center";
 brick.style.lineHeight = "1";
 
+brick.style.padding = "2px";
+brick.style.textAlign = "center";
+brick.style.wordBreak = "break-word";
+
 if (onlyEmoji) {
   brick.style.fontFamily = "Apple Color Emoji, Segoe UI Emoji, sans-serif";
-  brick.style.fontSize = "26px";
+  brick.style.fontSize = "32px";
 
 } else if (hasEmoji) {
   brick.style.fontFamily = "Arial, sans-serif";
@@ -565,7 +569,16 @@ if (onlyEmoji) {
 
 } else {
   brick.style.fontFamily = '"Press Start 2P", monospace';
-  brick.style.fontSize = "14px";
+
+  const len = content.length;
+
+  if (len <= 3) {
+    brick.style.fontSize = "16px";
+  } else if (len <= 5) {
+    brick.style.fontSize = "13px";
+  } else {
+    brick.style.fontSize = "11px";
+  }
 }
   brick.classList.add("placed");
 
@@ -822,9 +835,13 @@ brick.style.alignItems = "center";
 brick.style.justifyContent = "center";
 brick.style.lineHeight = "1";
 
+brick.style.padding = "2px";
+brick.style.textAlign = "center";
+brick.style.wordBreak = "break-word";
+
 if (onlyEmoji) {
   brick.style.fontFamily = "Apple Color Emoji, Segoe UI Emoji, sans-serif";
-  brick.style.fontSize = "26px";
+  brick.style.fontSize = "32px";
 
 } else if (hasEmoji) {
   brick.style.fontFamily = "Arial, sans-serif";
@@ -832,7 +849,16 @@ if (onlyEmoji) {
 
 } else {
   brick.style.fontFamily = '"Press Start 2P", monospace';
-  brick.style.fontSize = "14px";
+
+  const len = content.length;
+
+  if (len <= 3) {
+    brick.style.fontSize = "16px";
+  } else if (len <= 5) {
+    brick.style.fontSize = "13px";
+  } else {
+    brick.style.fontSize = "11px";
+  }
 }
       brick.classList.add("placed");
 
@@ -959,9 +985,13 @@ brick.style.alignItems = "center";
 brick.style.justifyContent = "center";
 brick.style.lineHeight = "1";
 
+brick.style.padding = "2px";
+brick.style.textAlign = "center";
+brick.style.wordBreak = "break-word";
+
 if (onlyEmoji) {
   brick.style.fontFamily = "Apple Color Emoji, Segoe UI Emoji, sans-serif";
-  brick.style.fontSize = "26px";
+  brick.style.fontSize = "32px";
 
 } else if (hasEmoji) {
   brick.style.fontFamily = "Arial, sans-serif";
@@ -969,7 +999,16 @@ if (onlyEmoji) {
 
 } else {
   brick.style.fontFamily = '"Press Start 2P", monospace';
-  brick.style.fontSize = "14px";
+
+  const len = content.length;
+
+  if (len <= 3) {
+    brick.style.fontSize = "16px";
+  } else if (len <= 5) {
+    brick.style.fontSize = "13px";
+  } else {
+    brick.style.fontSize = "11px";
+  }
 }
 
 
