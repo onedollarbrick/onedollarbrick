@@ -147,18 +147,24 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 <div id="aboutToggle">About</div>
 
 <div class="controls">
+
+  <!-- GROUP 1: PRICE -->
   <button class="t1 active" onclick="selectTier(1)">1$</button>
 
-<input id="customAmount" 
-       placeholder="Custom $" 
-       type="number" 
-       min="1" 
-       style="width:100px">
-  <button class="tmore" onclick="showMore()">more?</button>
-  <button class="tshare" onclick="showLove()">🤍 Show some love</button>
-<input id="textInput" placeholder="Text (6)" maxlength="6">
+  <input id="customAmount" 
+         placeholder="Custom $" 
+         type="number" 
+         min="1" 
+         style="width:100px">
 
-<button id="setBrickBtn">PLACE A BRICK</button>
+  <!-- GROUP 2: ACTION -->
+  <input id="textInput" placeholder="Text (6)" maxlength="6">
+  <button id="setBrickBtn">PLACE A BRICK</button>
+
+  <!-- GROUP 3: SOCIAL -->
+  <button class="tshare" onclick="showLove()">🤍 Love</button>
+  <button class="tshare" onclick="openX()">𝕏</button>
+  <button class="tshare" onclick="toggleFAQ()">FAQ</button>
 
 </div>
 
