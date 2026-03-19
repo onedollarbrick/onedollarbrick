@@ -880,6 +880,20 @@ if (onlyEmoji) {
   )
   .subscribe();
 
+  function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
  function generateBrickImage(text){
 
   const canvas = document.getElementById("brickImage");
@@ -889,21 +903,26 @@ if (onlyEmoji) {
   ctx.fillStyle = "#0e0e11";
   ctx.fillRect(0,0,400,200);
 
-  // Brick
-  ctx.fillStyle = "#f2994a";
-  ctx.fillRect(100,70,200,60);
+  // Brick Base (Gradient wie echte Bricks)
+const gradient = ctx.createLinearGradient(0, 70, 0, 130);
+gradient.addColorStop(0, "#f2994a");
+gradient.addColorStop(1, "#d9822b");
 
-  // Brick Highlight (oben)
-  ctx.fillStyle = "#ffe27a";
-  ctx.fillRect(100,70,200,8);
+ctx.fillStyle = gradient;
+roundRect(ctx, 100, 70, 200, 60, 8);
+ctx.fill();
 
-  // Brick Shadow (unten)
-  ctx.fillStyle = "#c9a53a";
-  ctx.fillRect(100,122,200,8);
+// Subtle top highlight
+ctx.fillStyle = "rgba(255,255,255,0.15)";
+ctx.fillRect(100, 70, 200, 4);
+
+// Subtle bottom shadow
+ctx.fillStyle = "rgba(0,0,0,0.25)";
+ctx.fillRect(100, 126, 200, 4);
 
   // Text im Brick
   ctx.fillStyle = "#000";
-  ctx.font = "14px 'Press Start 2P'";
+  ctx.font = "16px 'Press Start 2P'";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(text,200,100);
