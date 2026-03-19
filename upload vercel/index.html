@@ -342,21 +342,64 @@ Payments are processed via Stripe.
 </div>
 
 
-<!-- MORE OVERLAY -->
-<div id="moreOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:999">
-  <div style="background:#0f1511;border:2px solid #6fcf97;border-radius:14px;padding:30px;max-width:520px;color:#6fcf97;font-size:16px;line-height:1.6;text-align:center">
+<!-- FAQ OVERLAY -->
+<div id="faqOverlay" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+">
+  <div style="
+    background:#0f1511;
+    border:2px solid #6fcf97;
+    border-radius:16px;
+    padding:30px;
+    max-width:720px;
+    max-height:80vh;
+    overflow-y:auto;
+    color:#6fcf97;
+    font-size:14px;
+    line-height:1.6;
+  ">
 
-    <div style="font-family:'Press Start 2P', monospace;font-size:18px;margin-bottom:18px">
-      More
+    <div style="font-family:'Press Start 2P';margin-bottom:20px;text-align:center">
+      FAQ
     </div>
 
-    <p>
-      If you feel like giving more, thank you ❤️<br>
-      Reach out and we’ll make it work.<br>
-      mail: <strong>onedollarbrick@proton.me</strong>
+    <p><strong>Is this a donation?</strong><br>
+    It’s a statement. Peace should cost less than conflict.<br>
+    You buy a symbolic digital brick.</p>
+
+    <p><strong>What happens if the goal is not reached?</strong><br>
+    The experiment ends and the situation is reassessed.</p>
+
+    <p><strong>Who runs this project?</strong><br>
+    People affected by the situation.<br>
+    Anonymous due to an ongoing legal conflict.</p>
+
+    <p><strong>Where does the money go?</strong><br>
+    To resolve the dispute, potentially by acquiring the space.</p>
+
+    <p><strong>Why 1$?</strong><br>
+    So almost anyone can participate.</p>
+
+    <p><strong>How can I trust this?</strong><br>
+    It’s an open experiment, not a guaranteed outcome.</p>
+
+    <p style="margin-top:20px">
+      Contact:<br>
+      <strong>onedollarbrick@proton.me</strong>
     </p>
 
-    <div id="moreClose" style="margin-top:22px;cursor:pointer;font-family:'Press Start 2P', monospace">
+    <div id="faqClose" style="
+      margin-top:20px;
+      text-align:center;
+      cursor:pointer;
+      font-family:'Press Start 2P';
+    ">
       Close
     </div>
 
@@ -509,6 +552,21 @@ const paymentOverlay = document.getElementById("paymentOverlay");
 const paymentElementContainer = document.getElementById("payment-element");
 const payBtn = document.getElementById("payBtn");
 const paymentClose = document.getElementById("paymentClose");
+
+const faqOverlay = document.getElementById("faqOverlay");
+const faqClose = document.getElementById("faqClose");
+
+window.toggleFAQ = () => {
+  faqOverlay.style.display = "flex";
+};
+
+faqClose.onclick = () => {
+  faqOverlay.style.display = "none";
+};
+
+faqOverlay.onclick = e => {
+  if (e.target === faqOverlay) faqOverlay.style.display = "none";
+};
 
 function addRow(r){
   const row = document.createElement("div");
