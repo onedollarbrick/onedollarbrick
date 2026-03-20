@@ -133,9 +133,9 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 }
 
 .customInput{
-  background:#5fb3ff;
-  color:#0e0e11;
-  border:none;
+  background:#111;
+  color:#fff;
+  border:2px solid #5fb3ff;
   outline:none;
   font-family:"Press Start 2P", monospace;
   font-size:11px;
@@ -146,8 +146,52 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 }
 
 .customInput::placeholder{
-  color:#0e0e11;
+  color:#6fbfff;
   opacity:0.7;
+}
+
+/* Hover + Focus Effekt */
+.customInput:focus,
+.customInput:hover{
+  border-color:#2f80ed;
+  box-shadow:0 0 6px rgba(95,179,255,0.5);
+}
+
+/* --- CUSTOM INPUT (clean, editierbar look) --- */
+.customInput{
+  background:#0e0e11;
+  color:#fff;
+  border:2px solid #5fb3ff;
+  outline:none;
+  font-family:"Press Start 2P", monospace;
+  font-size:11px;
+  padding:8px;
+  border-radius:8px;
+  width:110px;
+  text-align:center;
+}
+
+.customInput::placeholder{
+  color:#5fb3ff;
+  opacity:0.8;
+}
+
+/* Fokus Effekt (wichtig für UX) */
+.customInput:focus{
+  border-color:#9fd0ff;
+  box-shadow:0 0 6px rgba(95,179,255,0.6);
+}
+
+/* --- Entfernt die nervigen Pfeile (Chrome/Safari) --- */
+.customInput::-webkit-inner-spin-button,
+.customInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* --- Entfernt Pfeile in Firefox --- */
+.customInput {
+  -moz-appearance: textfield;
 }
 
 </style>
@@ -169,11 +213,11 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   <!-- GROUP 1: PRICE -->
   <button class="t1 active" onclick="selectTier(1)">1$</button>
 
-  <input id="customAmount" class="customInput"
-       placeholder="Custom $" 
+  <<input id="customAmount" 
+       class="customInput"
+       placeholder="custom $" 
        type="number" 
-       min="1"
-       class="customInput">
+       min="1">
 
   <!-- GROUP 2: ACTION -->
   <input id="textInput" placeholder="Text (6)" maxlength="6">
