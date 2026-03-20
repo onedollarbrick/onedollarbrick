@@ -506,9 +506,7 @@ onedollarbrick@proton.me
     font-family:'Press Start 2P', monospace;
   ">
 
-    <div style="font-size:18px;margin-bottom:20px;">
-      Your brick was placed 🧱
-    </div>
+   <div id="shareTitle" style="font-size:18px;margin-bottom:20px;"></div>
 
     <canvas id="brickImage" width="400" height="200" style="
 background:#000;
@@ -1079,9 +1077,8 @@ shareClose.onclick = () => {
 window.shareBrick = () => {
 
   const text = encodeURIComponent(
-`"${shareTextValue}"
+`${shareTextValue}
 
-I just placed a brick on the wall 🧱
 Can the internet buy peace for $1?
 
 onedollarbrick.com`
@@ -1095,9 +1092,8 @@ onedollarbrick.com`
 window.copyBrick = () => {
 
   const text =
-`"${shareTextValue}"
+`${shareTextValue}
 
-I just placed a brick on the wall 🧱
 Can the internet buy peace for $1?
 
 onedollarbrick.com`;
@@ -1112,6 +1108,8 @@ const redirectStatus = urlParams.get("redirect_status");
 
 if (redirectStatus === "succeeded") {
 
+  const brickNumber = bricksPlaced + 1;
+
   const saved = localStorage.getItem("pendingBrick");
 
   if (saved) {
@@ -1119,7 +1117,12 @@ if (redirectStatus === "succeeded") {
     const savedBrick = JSON.parse(saved);
     const { row, col, text, tier } = savedBrick;
 
-    shareTextValue = text;
+   const brickNumber = bricksPlaced + 1;
+
+shareTextValue = `You placed Brick #${brickNumber} 🧱
+You are now part of the wall.
+
+🟩 Progress matters.`;
 
     const brick = document.querySelector(
       `.brick[data-row="${row}"][data-col="${col}"]`
@@ -1188,6 +1191,7 @@ if (onlyEmoji) {
 
   document.getElementById("shareOverlay").style.display = "flex";
   generateBrickImage(shareTextValue);
+  document.getElementById("shareTitle").innerText = shareTextValue;
 }
 
 </script>
