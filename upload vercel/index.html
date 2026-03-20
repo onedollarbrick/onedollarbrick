@@ -833,24 +833,13 @@ window.shareOnly=()=>window.open(
   "_blank"
 );
 
-window.showMore=()=>document.getElementById("moreOverlay").style.display="flex";
 
-window.copyMoreText=()=>{
-  navigator.clipboard.writeText(
-    "If you feel like giving more, thank you ❤️\n\nReach out and we’ll make it work.\nmail: onedollarbrick@proton.me"
-  );
-  alert("Text copied");
-};
 
 aboutToggle.onclick=()=>aboutOverlay.style.display="flex";
 aboutClose.onclick=()=>aboutOverlay.style.display="none";
 aboutOverlay.onclick=e=>{if(e.target===aboutOverlay)aboutOverlay.style.display="none"};
 
-const moreOverlay = document.getElementById("moreOverlay");
-const moreClose = document.getElementById("moreClose");
 
-moreClose.onclick=()=>moreOverlay.style.display="none";
-moreOverlay.onclick=e=>{if(e.target===moreOverlay)moreOverlay.style.display="none"};
 const loveOverlay = document.getElementById("loveOverlay");
 const loveClose = document.getElementById("loveClose");
 
