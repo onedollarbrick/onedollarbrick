@@ -133,9 +133,9 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 }
 
 .customInput{
-  background:#ffffff;
-  color:#555; /* schöner grau statt schwarz */
-  border:2px solid #5fb3ff;
+  background:#ffffff;        /* innen weiß */
+  color:#777;                /* soft grau wie "Text (6)" */
+  border:2px solid #5fb3ff;  /* blauer Rahmen */
   outline:none;
   font-family:"Press Start 2P", monospace;
   font-size:11px;
@@ -145,43 +145,22 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   text-align:center;
 }
 
+/* Placeholder */
 .customInput::placeholder{
   color:#999;
   opacity:1;
 }
 
-/* Hover + Focus Effekt */
+/* Hover + Focus */
 .customInput:focus,
 .customInput:hover{
   border-color:#7fc2ff;
 }
-
-/* --- CUSTOM INPUT (clean, editierbar look) --- */
-.customInput{
-  background:#0e0e11;
-  color:#fff;
-  border:2px solid #5fb3ff;
-  outline:none;
-  font-family:"Press Start 2P", monospace;
-  font-size:11px;
-  padding:8px;
-  border-radius:8px;
-  width:110px;
-  text-align:center;
-}
-
-.customInput::placeholder{
-  color:#5fb3ff;
-  opacity:0.8;
-}
-
-/* Fokus Effekt (wichtig für UX) */
 .customInput:focus{
-  border-color:#5fb3ff;
-  box-shadow:0 0 6px rgba(95,179,255,0.4);
+  box-shadow:0 0 8px rgba(95,179,255,0.5);
 }
 
-/* Chrome / Safari */
+/* Chrome / Safari Pfeile weg */
 .customInput::-webkit-inner-spin-button,
 .customInput::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -212,7 +191,7 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   <!-- GROUP 1: PRICE -->
   <button class="t1 active" onclick="selectTier(1)">1$</button>
 
-  <<input id="customAmount" 
+<input id="customAmount"
        class="customInput"
        placeholder="custom $" 
        type="number" 
@@ -223,7 +202,7 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   <button id="setBrickBtn">PLACE A BRICK</button>
 
   <!-- GROUP 3: SOCIAL -->
-  <button class="tshare" onclick="showLove()">🤍 Love</button>
+  <button class="tshare" onclick="showLove()">🤍 Show some love</button>
   <button class="tshare" onclick="toggleFAQ()">FAQ</button>
   <button class="tshare" onclick="openX()">𝕏</button>
 
