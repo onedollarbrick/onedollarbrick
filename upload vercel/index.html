@@ -135,15 +135,18 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 }
 
 .customInput{
-  background:#ffffff;        /* innen weiß */
-  color:#777;                /* soft grau wie "Text (6)" */
-  border:2px solid #5fb3ff;  /* blauer Rahmen */
+  background:#ffffff;
+  color:#777;
+  border:2px solid #5fb3ff;
   outline:none;
   font-family:"Press Start 2P", monospace;
   font-size:11px;
-  padding:8px;
+
+  padding:8px 12px;   /* ⚠️ gleich wie Button */
+  width:auto;         /* ⚠️ wichtig */
+  min-width:90px;     /* optional */
+  
   border-radius:8px;
-  width:110px;
   text-align:center;
 
   box-sizing:border-box;
@@ -852,15 +855,17 @@ const loveOverlay = document.getElementById("loveOverlay");
 const loveClose = document.getElementById("loveClose");
 
 window.showLove = () => {
-  loveOverlay.style.display = "flex";
+  document.getElementById("loveOverlay").style.display = "flex";
 };
 
-loveClose.onclick = () => {
-  loveOverlay.style.display = "none";
+document.getElementById("loveClose").onclick = () => {
+  document.getElementById("loveOverlay").style.display = "none";
 };
 
-loveOverlay.onclick = e => {
-  if (e.target === loveOverlay) loveOverlay.style.display = "none";
+document.getElementById("loveOverlay").onclick = e => {
+  if (e.target.id === "loveOverlay") {
+    e.target.style.display = "none";
+  }
 };
 
 window.shareLove = () => {
