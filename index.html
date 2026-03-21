@@ -250,7 +250,7 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
     <div>800’000<br>Space can be acquired</div>
   </div>
 
-  <div class="milestone" data-goal="10000000">
+  <div class="milestone" data-goal="1000000">
     <div class="dot"></div>
     <div>1’000’000<br>Rebuild</div>
   </div>
@@ -748,10 +748,23 @@ const progress = bricksPlaced / 1000000;
 updateProgressBar();
 
 // 👉 NEU
-progressFill.style.background =
-  progress >= 1
-    ? "linear-gradient(90deg, #00ff88, #00cc66)"
-    : "linear-gradient(90deg, #ffffff, #6fcf97)";
+let color;
+
+if (bricksPlaced >= 10000000) {
+  color = "#00ff88";
+} else if (bricksPlaced >= 800000) {
+  color = "#00e676";
+} else if (bricksPlaced >= 500000) {
+  color = "#00d46a";
+} else if (bricksPlaced >= 5000) {
+  color = "#00c853";
+} else if (bricksPlaced >= 50) {
+  color = "#6fcf97";
+} else {
+  color = "#ffffff";
+}
+
+progressFill.style.background = `linear-gradient(90deg, ${color}, #222)`;
 
 updateMilestones();
 
@@ -1030,10 +1043,23 @@ const progress = bricksPlaced / 1000000;
 updateProgressBar();
 
 // 👉 NEU
-progressFill.style.background =
-  progress >= 1
-    ? "linear-gradient(90deg, #00ff88, #00cc66)"
-    : "linear-gradient(90deg, #ffffff, #6fcf97)";
+let color;
+
+if (bricksPlaced >= 10000000) {
+  color = "#00ff88";
+} else if (bricksPlaced >= 800000) {
+  color = "#00e676";
+} else if (bricksPlaced >= 500000) {
+  color = "#00d46a";
+} else if (bricksPlaced >= 5000) {
+  color = "#00c853";
+} else if (bricksPlaced >= 50) {
+  color = "#6fcf97";
+} else {
+  color = "#ffffff";
+}
+
+progressFill.style.background = `linear-gradient(90deg, ${color}, #222)`;
 
 updateMilestones();
 
