@@ -741,9 +741,18 @@ if (onlyEmoji) {
   brick.style.background=b.tier===1?"#f2994a":"#5fb3ff";
   brick.style.color="#000";
 });
-bricksPlaced=data.length;
-brickCount.textContent=bricksPlaced;
-progressFill.style.width=(bricksPlaced/1000000*100)+"%";
+bricksPlaced = data.length;
+brickCount.textContent = bricksPlaced;
+
+const progress = bricksPlaced / 1000000;
+updateProgressBar();
+
+// 👉 NEU
+progressFill.style.background =
+  progress >= 1
+    ? "linear-gradient(90deg, #00ff88, #00cc66)"
+    : "linear-gradient(90deg, #ffffff, #6fcf97)";
+
 updateMilestones();
 
 
@@ -1014,11 +1023,19 @@ if (onlyEmoji) {
       brick.style.color = "#000";
 
     
-      brickCount.textContent = bricksPlaced;
-      progressFill.style.width =
-        (bricksPlaced / 1000000 * 100) + "%";
+     bricksPlaced++;
+brickCount.textContent = bricksPlaced;
 
-      updateMilestones();
+const progress = bricksPlaced / 1000000;
+updateProgressBar();
+
+// 👉 NEU
+progressFill.style.background =
+  progress >= 1
+    ? "linear-gradient(90deg, #00ff88, #00cc66)"
+    : "linear-gradient(90deg, #ffffff, #6fcf97)";
+
+updateMilestones();
 
 // 👇 HIER REIN
 const saved = localStorage.getItem("pendingBrick");
@@ -1116,10 +1133,10 @@ shareClose.onclick = async () => {
 
   brickCount.textContent = bricksPlaced;
 
-  progressFill.style.width =
-    (bricksPlaced / 1000000 * 100) + "%";
+ updateProgressBar();
 
   updateMilestones();
+  updateProgressBar();
 };
 
 window.shareBrick = () => {
