@@ -1019,6 +1019,28 @@ if (onlyEmoji) {
         (bricksPlaced / 1000000 * 100) + "%";
 
       updateMilestones();
+
+// 👇 HIER REIN
+const saved = localStorage.getItem("pendingBrick");
+
+if (saved) {
+  const savedBrick = JSON.parse(saved);
+
+  if (
+    savedBrick.row == b.row &&
+    savedBrick.col == b.col
+  ) {
+
+    shareTextValue = `I placed Brick #${bricksPlaced} 🧱
+I am part of the wall.`;
+
+    document.getElementById("shareOverlay").style.display = "flex";
+    generateBrickImage(b.text);
+    document.getElementById("shareTitle").innerText = shareTextValue;
+
+    localStorage.removeItem("pendingBrick");
+  }
+}
     }
   )
   .subscribe();
@@ -1135,58 +1157,9 @@ if (redirectStatus === "succeeded") {
 shareTextValue = `I placed Brick #${brickNumber} 🧱
 I am part of the wall.`;
 
-    const brick = document.querySelector(
-      `.brick[data-row="${row}"][data-col="${col}"]`
-    );
-
-    if (brick) {
-      brick.textContent = text;
-      const content = text;
-
-const hasEmoji = /\p{Emoji}/u.test(content);
-const onlyEmoji = /^[\p{Emoji}\s]+$/u.test(content);
-
-brick.style.display = "flex";
-brick.style.alignItems = "center";
-brick.style.justifyContent = "center";
-brick.style.lineHeight = "1";
-
-brick.style.padding = "2px";
-brick.style.textAlign = "center";
-brick.style.wordBreak = "break-word";
-
-if (onlyEmoji) {
-  brick.style.fontFamily = "Apple Color Emoji, Segoe UI Emoji, sans-serif";
-  brick.style.fontSize = "32px";
-
-} else if (hasEmoji) {
-  brick.style.fontFamily = "Arial, sans-serif";
-  brick.style.fontSize = "16px";
-
-} else {
-  brick.style.fontFamily = '"Press Start 2P", monospace';
-
-  const len = content.length;
-
-  if (len <= 3) {
-    brick.style.fontSize = "16px";
-  } else if (len <= 5) {
-    brick.style.fontSize = "13px";
-  } else {
-    brick.style.fontSize = "11px";
-  }
-}
+    
 
 
-
-      brick.classList.add("placed");
-
-      brick.style.background =
-        tier === 1 ? "#f2994a" : "#5fb3ff";
-
-      brick.style.color = "#000";
-
-    }
 
     localStorage.removeItem("pendingBrick");
   }
