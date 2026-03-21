@@ -1117,13 +1117,15 @@ onedollarbrick.com`;
 // ✅ STRIPE REDIRECT (GANZ AM ENDE!!!)
 const redirectStatus = new URLSearchParams(window.location.search).get("redirect_status");
 
+let savedBrick = null;
+
 if (redirectStatus === "succeeded") {
 
   const saved = localStorage.getItem("pendingBrick");
 
   if (saved) {
 
-    const savedBrick = JSON.parse(saved);
+    savedBrick = JSON.parse(saved);
     const { row, col, text, tier } = savedBrick;
 
     console.log("TEXT FOR IMAGE:", text);
@@ -1198,9 +1200,10 @@ if (onlyEmoji) {
 
   window.history.replaceState({}, document.title, window.location.pathname);
 
-document.getElementById("shareOverlay").style.display = "flex";
-generateBrickImage(savedBrick.text);
-document.getElementById("shareTitle").innerText = shareTextValue;
+if (savedBrick) {
+  document.getElementById("shareOverlay").style.display = "flex";
+  generateBrickImage(savedBrick.text);
+  document.getElementById("shareTitle").innerText = shareTextValue;
 }
 
 </script>
