@@ -1126,6 +1126,8 @@ if (redirectStatus === "succeeded") {
     const savedBrick = JSON.parse(saved);
     const { row, col, text, tier } = savedBrick;
 
+    console.log("TEXT FOR IMAGE:", text);
+
    const brickNumber = bricksPlaced + 1;
 
 shareTextValue = `I placed Brick #${brickNumber} 🧱
@@ -1197,7 +1199,7 @@ if (onlyEmoji) {
   window.history.replaceState({}, document.title, window.location.pathname);
 
   document.getElementById("shareOverlay").style.display = "flex";
-  generateBrickImage(savedBrick.text);
+  generateBrickImage(text);
   document.getElementById("shareTitle").innerText = shareTextValue;
 }
 
