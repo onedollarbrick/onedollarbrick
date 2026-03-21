@@ -1013,7 +1013,7 @@ if (onlyEmoji) {
 
       brick.style.color = "#000";
 
-      bricksPlaced++;
+    
       brickCount.textContent = bricksPlaced;
       progressFill.style.width =
         (bricksPlaced / 1000000 * 100) + "%";
@@ -1130,7 +1130,7 @@ if (redirectStatus === "succeeded") {
 
     console.log("TEXT FOR IMAGE:", text);
 
-   const brickNumber = document.querySelectorAll(".brick.placed").length;
+   const brickNumber = bricksPlaced + 1;
 
 shareTextValue = `I placed Brick #${brickNumber} 🧱
 I am part of the wall.`;
@@ -1186,13 +1186,6 @@ if (onlyEmoji) {
 
       brick.style.color = "#000";
 
-      bricksPlaced++;
-      brickCount.textContent = bricksPlaced;
-
-      progressFill.style.width =
-        (bricksPlaced / 1000000 * 100) + "%";
-
-      updateMilestones();
     }
 
     localStorage.removeItem("pendingBrick");
