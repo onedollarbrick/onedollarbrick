@@ -254,8 +254,8 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 </div>
 
   <div class="progressLabel">
-    Placed: <strong><span id="brickCount">0</span> bricks</strong>
-  </div>
+  People joined: <strong><span id="brickCount">0</span></strong>
+</div>
 
   <div class="progressSub">
     Goal: buying peace
@@ -1108,8 +1108,6 @@ const redirectStatus = urlParams.get("redirect_status");
 
 if (redirectStatus === "succeeded") {
 
-  const brickNumber = bricksPlaced + 1;
-
   const saved = localStorage.getItem("pendingBrick");
 
   if (saved) {
@@ -1120,9 +1118,7 @@ if (redirectStatus === "succeeded") {
    const brickNumber = bricksPlaced + 1;
 
 shareTextValue = `You placed Brick #${brickNumber} 🧱
-You are now part of the wall.
-
-🟩 Progress matters.`;
+You are now part of the wall.`;
 
     const brick = document.querySelector(
       `.brick[data-row="${row}"][data-col="${col}"]`
@@ -1190,7 +1186,7 @@ if (onlyEmoji) {
   window.history.replaceState({}, document.title, window.location.pathname);
 
   document.getElementById("shareOverlay").style.display = "flex";
-  generateBrickImage(shareTextValue);
+  generateBrickImage(text);
   document.getElementById("shareTitle").innerText = shareTextValue;
 }
 
