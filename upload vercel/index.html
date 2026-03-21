@@ -1104,8 +1104,22 @@ ctx.fillRect(100, 126, 200, 4);
 const shareOverlay = document.getElementById("shareOverlay");
 const shareClose = document.getElementById("shareClose");
 
-shareClose.onclick = () => {
+shareClose.onclick = async () => {
   shareOverlay.style.display = "none";
+
+  // 🔥 hol echten Stand aus DB
+  const { data } = await supabase
+    .from("bricks")
+    .select("*");
+
+  bricksPlaced = data.length;
+
+  brickCount.textContent = bricksPlaced;
+
+  progressFill.style.width =
+    (bricksPlaced / 1000000 * 100) + "%";
+
+  updateMilestones();
 };
 
 window.shareBrick = () => {
