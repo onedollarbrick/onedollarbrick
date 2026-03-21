@@ -73,7 +73,11 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
   margin-bottom:16px;
 }
 
-.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffd54f,#ff8c42)}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background: linear-gradient(90deg, #ffffff, #6fcf97);
+}
 .progressLabel{
   text-align:center;
   font-size:20px;
@@ -575,6 +579,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 console.log("SCRIPT STARTED");
 let shareTextValue = "";
 
+const urlParams = new URLSearchParams(window.location.search);
+const fromShare = urlParams.get("from");
+
+if (fromShare === "share") {
+  setTimeout(() => {
+    alert("Join the wall. Place your brick.");
+  }, 800);
+}
 
 const supabase = createClient(
   "https://jftttrosqjvcdgummhlm.supabase.co",
@@ -1081,8 +1093,8 @@ window.shareBrick = () => {
 
 Can the internet buy peace for $1?
 
-onedollarbrick.com`
-  );
+onedollarbrick.com/?from=share`
+);
 
   window.open(`https://x.com/intent/tweet?text=${text}`, "_blank");
 
@@ -1103,8 +1115,7 @@ onedollarbrick.com`;
   alert("Copied!");
 };
 // ✅ STRIPE REDIRECT (GANZ AM ENDE!!!)
-const urlParams = new URLSearchParams(window.location.search);
-const redirectStatus = urlParams.get("redirect_status");
+const redirectStatus = new URLSearchParams(window.location.search).get("redirect_status");
 
 if (redirectStatus === "succeeded") {
 
@@ -1117,8 +1128,8 @@ if (redirectStatus === "succeeded") {
 
    const brickNumber = bricksPlaced + 1;
 
-shareTextValue = `You placed Brick #${brickNumber} 🧱
-You are now part of the wall.`;
+shareTextValue = `I placed Brick #${brickNumber} 🧱
+I am part of the wall.`;
 
     const brick = document.querySelector(
       `.brick[data-row="${row}"][data-col="${col}"]`
@@ -1186,7 +1197,7 @@ if (onlyEmoji) {
   window.history.replaceState({}, document.title, window.location.pathname);
 
   document.getElementById("shareOverlay").style.display = "flex";
-  generateBrickImage(text);
+  generateBrickImage(savedBrick.text);
   document.getElementById("shareTitle").innerText = shareTextValue;
 }
 
