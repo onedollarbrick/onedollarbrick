@@ -1198,9 +1198,9 @@ if (onlyEmoji) {
 
   window.history.replaceState({}, document.title, window.location.pathname);
 
-  document.getElementById("shareOverlay").style.display = "flex";
-  generateBrickImage(text);
-  document.getElementById("shareTitle").innerText = shareTextValue;
+document.getElementById("shareOverlay").style.display = "flex";
+generateBrickImage(savedBrick.text);
+document.getElementById("shareTitle").innerText = shareTextValue;
 }
 
 </script>
