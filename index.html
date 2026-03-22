@@ -622,23 +622,28 @@ let selectedTier = 1;
 
 function updateProgressBar() {
 
-  const progress = bricksPlaced / 1000000;
+  // 🔥 dynamisches Ziel je nach Milestone
+  let maxGoal = 50;
 
-  console.log("UPDATE BAR", progress);
+  if (bricksPlaced >= 5000) maxGoal = 5000;
+  if (bricksPlaced >= 500000) maxGoal = 500000;
+  if (bricksPlaced >= 800000) maxGoal = 800000;
+  if (bricksPlaced >= 1000000) maxGoal = 1000000;
 
-  // Breite
-  progressFill.style.width = "50%";
+  const progress = Math.min(bricksPlaced / maxGoal, 1);
 
-  // Farbe
+  // Breite setzen
+  progressFill.style.width = (progress * 100) + "%";
+
+  // Farbe (optional – kannst du lassen)
   let color = "#6fcf97";
 
   if (progress > 0.5) color = "#ffd54f";
   if (progress > 0.8) color = "#ff6b6b";
 
-  console.log("COLOR:", color);
-
-  progressFill.style.background =
+  progressFill.style.backgroundImage =
     `linear-gradient(90deg, #ffffff, ${color})`;
+
 }
 
 
