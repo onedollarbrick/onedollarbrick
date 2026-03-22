@@ -626,8 +626,21 @@ function updateProgressBar() {
   // Breite
   progressFill.style.width = (progress * 100) + "%";
 
+function updateProgressBar() {
+  const progress = bricksPlaced / 1000000;
+
+  // Breite
+  progressFill.style.width = (progress * 100) + "%";
+
+  // Farbe je nach Fortschritt
+  let color = "#6fcf97"; // grün (start)
+
+  if (progress > 0.5) color = "#ffd54f";   // gelb
+  if (progress > 0.8) color = "#ff6b6b";   // rot
+
   progressFill.style.background =
     `linear-gradient(90deg, #ffffff, ${color})`;
+}
 }
 
 
