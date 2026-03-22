@@ -621,18 +621,23 @@ let bricksPlaced = 0;
 let selectedTier = 1;
 
 function updateProgressBar() {
+
   const progress = bricksPlaced / 1000000;
+
+  console.log("UPDATE BAR", progress);
 
   // Breite
   progressFill.style.width = (progress * 100) + "%";
 
-  // Farbe je nach Fortschritt
-  let color = "#6fcf97"; // grün (start)
+  // Farbe
+  let color = "#6fcf97";
 
-  if (progress > 0.5) color = "#ffd54f";   // gelb
-  if (progress > 0.8) color = "#ff6b6b";   // rot
+  if (progress > 0.5) color = "#ffd54f";
+  if (progress > 0.8) color = "#ff6b6b";
 
-  progressFill.style.backgroundImage =
+  console.log("COLOR:", color);
+
+  progressFill.style.background =
     `linear-gradient(90deg, #ffffff, ${color})`;
 }
 
