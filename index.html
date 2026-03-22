@@ -625,21 +625,22 @@ function updateProgressBar() {
   // 🔥 dynamisches Ziel je nach Milestone
   let maxGoal = 50;
 
-  if (bricksPlaced >= 5000) maxGoal = 5000;
-  if (bricksPlaced >= 500000) maxGoal = 500000;
-  if (bricksPlaced >= 800000) maxGoal = 800000;
-  if (bricksPlaced >= 1000000) maxGoal = 1000000;
+if (bricksPlaced >= 50) maxGoal = 5000;
+if (bricksPlaced >= 5000) maxGoal = 500000;
+if (bricksPlaced >= 500000) maxGoal = 800000;
+if (bricksPlaced >= 800000) maxGoal = 1000000;
 
-  const progress = Math.min(bricksPlaced / maxGoal, 1);
-
-  // Breite setzen
-  progressFill.style.width = (progress * 100) + "%";
+const progress = bricksPlaced / 1000000;
+progressFill.style.width = (progress * 100) + "%";
 
   // Farbe (optional – kannst du lassen)
-  let color = "#6fcf97";
+let color = "#6fcf97"; // default
 
-  if (progress > 0.5) color = "#ffd54f";
-  if (progress > 0.8) color = "#ff6b6b";
+if (bricksPlaced >= 50) color = "#00e676";      // stärkeres grün
+if (bricksPlaced >= 5000) color = "#00c853";    // noch stärker
+if (bricksPlaced >= 500000) color = "#64dd17";  // fast lime
+if (bricksPlaced >= 800000) color = "#aeea00";  // gelb-grün
+if (bricksPlaced >= 1000000) color = "#ffd600"; // gold
 
   progressFill.style.backgroundImage =
     `linear-gradient(90deg, #ffffff, ${color})`;
