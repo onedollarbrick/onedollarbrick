@@ -620,15 +620,14 @@ let pendingBrick = null;
 let bricksPlaced = 0;
 let selectedTier = 1;
 
-let selectedTier = 1;
-
 function updateProgressBar() {
   const progress = bricksPlaced / 1000000;
 
   // Breite
   progressFill.style.width = (progress * 100) + "%";
 
- 
+  progressFill.style.background =
+    `linear-gradient(90deg, #ffffff, ${color})`;
 }
 
 
