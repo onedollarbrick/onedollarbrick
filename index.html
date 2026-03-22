@@ -625,10 +625,10 @@ let selectedTier = 1;
 function updateProgressBar() {
   const progress = bricksPlaced / 1000000;
 
-  // Fortschritt (Breite)
+  // Breite
   progressFill.style.width = (progress * 100) + "%";
 
-
+ 
 }
 
 
@@ -1036,24 +1036,6 @@ brickCount.textContent = bricksPlaced;
 const progress = bricksPlaced / 1000000;
 updateProgressBar();
 
-// 👉 NEU
-let color;
-
-if (bricksPlaced >= 10000000) {
-  color = "#00ff88";
-} else if (bricksPlaced >= 800000) {
-  color = "#00e676";
-} else if (bricksPlaced >= 500000) {
-  color = "#00d46a";
-} else if (bricksPlaced >= 5000) {
-  color = "#00c853";
-} else if (bricksPlaced >= 50) {
-  color = "#6fcf97";
-} else {
-  color = "#ffffff";
-}
-
-progressFill.style.background = `linear-gradient(90deg, #ffffff, ${color})`;
 
 updateMilestones();
 
