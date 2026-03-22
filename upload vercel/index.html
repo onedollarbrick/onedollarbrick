@@ -630,7 +630,12 @@ if (bricksPlaced >= 5000) maxGoal = 500000;
 if (bricksPlaced >= 500000) maxGoal = 800000;
 if (bricksPlaced >= 800000) maxGoal = 1000000;
 
-const progress = bricksPlaced / 1000000;
+let progress = bricksPlaced / 1000000;
+
+// 🔥 Sichtbarkeits-Boost für kleine Zahlen
+if (bricksPlaced < 5000) {
+  progress = Math.max(progress, bricksPlaced / 50 * 0.1);
+}
 progressFill.style.width = (progress * 100) + "%";
 
   // Farbe (optional – kannst du lassen)
