@@ -76,7 +76,7 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 .progress-fill{
   height:100%;
   width:0%;
-  background: linear-gradient(90deg, #ffffff, #6fcf97);
+  background: #6fcf97; /* fallback */
 }
 .progressLabel{
   text-align:center;
@@ -627,7 +627,7 @@ function updateProgressBar() {
   console.log("UPDATE BAR", progress);
 
   // Breite
-  progressFill.style.width = (progress * 100) + "%";
+  progressFill.style.width = "50%";
 
   // Farbe
   let color = "#6fcf97";
@@ -651,6 +651,7 @@ function updateMilestones(){
 
 const brickCount = document.getElementById("brickCount");
 const progressFill = document.getElementById("progressFill");
+console.log(progressFill);
 const textInput = document.getElementById("textInput");
 
 const aboutToggle = document.getElementById("aboutToggle");
