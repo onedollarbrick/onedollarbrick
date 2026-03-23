@@ -103,18 +103,17 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 .brick.preview{outline:2px dashed #fff;opacity:.6}
 .footerNote{font-size:11px;opacity:.55;margin:28px 0 30px;text-align:center;max-width:520px;line-height:1.6}
 .milestones{
-  display:flex;
-  justify-content:space-between;
-  margin:22px auto 0;
+  position: relative;
   max-width:1100px;
   width:100%;
-  padding:0 24px;
-  opacity:0.65;
+  margin:22px auto 0;
+  height:60px;
 }
 
 .milestone{
+  position:absolute;
+  transform:translateX(-50%);
   text-align:center;
-  flex:1;
   color:#6b6b6b;
   font-size:11px;
   font-family:"Press Start 2P", monospace;
@@ -620,24 +619,33 @@ let pendingBrick = null;
 let bricksPlaced = 0;
 let selectedTier = 1;
 
+const milestones = [50, 5000, 500000, 800000, 1000000];
+
 function updateProgressBar() {
 
   let progress = 0;
 
-  if (bricksPlaced < 50) {
-    progress = (bricksPlaced / 50) * 0.2;
-  } else if (bricksPlaced < 5000) {
-    progress = 0.2 + ((bricksPlaced - 50) / (5000 - 50)) * 0.2;
-  } else if (bricksPlaced < 500000) {
-    progress = 0.4 + ((bricksPlaced - 5000) / (500000 - 5000)) * 0.2;
-  } else if (bricksPlaced < 800000) {
-    progress = 0.6 + ((bricksPlaced - 500000) / (800000 - 500000)) * 0.2;
-  } else {
-    progress = 0.8 + ((bricksPlaced - 800000) / (1000000 - 800000)) * 0.2;
+  for (let i = 0; i < milestones.length; i++) {
+
+    const start = i === 0 ? 0 : milestones[i - 1];
+    const end = milestones[i];
+
+    const segmentSize = 1 / milestones.length;
+
+    if (bricksPlaced <= end) {
+
+      const localProgress = (bricksPlaced - start) / (end - start);
+
+      progress = (i * segmentSize) + (localProgress * segmentSize);
+      break;
+    }
   }
+
+  progress = Math.min(progress, 1);
 
   progressFill.style.width = (progress * 100) + "%";
 
+  // Farbe bleibt gleich
   let color = "#6fcf97";
 
   if (bricksPlaced >= 50) color = "#00e676";
@@ -1083,6 +1091,17 @@ I am part of the wall.`;
     }
   )
   .subscribe();
+
+  function positionMilestones() {
+
+  document.querySelectorAll(".milestone").forEach((m, i) => {
+    const percent = (i / (milestones.length - 1)) * 100;
+    m.style.left = percent + "%";
+  });
+
+}
+
+positionMilestones();
 
   function roundRect(ctx, x, y, width, height, radius) {
   ctx.beginPath();
