@@ -632,9 +632,18 @@ if (bricksPlaced >= 800000) maxGoal = 1000000;
 
 let progress = bricksPlaced / 1000000;
 
-// 🔥 Sichtbarkeits-Boost für kleine Zahlen
-if (bricksPlaced < 5000) {
-  progress = Math.max(progress, bricksPlaced / 50 * 0.1);
+let progress = 0;
+
+if (bricksPlaced < 50) {
+  progress = (bricksPlaced / 50) * 0.2;
+} else if (bricksPlaced < 5000) {
+  progress = 0.2 + ((bricksPlaced - 50) / (5000 - 50)) * 0.2;
+} else if (bricksPlaced < 500000) {
+  progress = 0.4 + ((bricksPlaced - 5000) / (500000 - 5000)) * 0.2;
+} else if (bricksPlaced < 800000) {
+  progress = 0.6 + ((bricksPlaced - 500000) / (800000 - 500000)) * 0.2;
+} else {
+  progress = 0.8 + ((bricksPlaced - 800000) / (1000000 - 800000)) * 0.2;
 }
 progressFill.style.width = (progress * 100) + "%";
 
