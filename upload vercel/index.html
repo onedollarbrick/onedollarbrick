@@ -622,43 +622,32 @@ let selectedTier = 1;
 
 function updateProgressBar() {
 
-  // 🔥 dynamisches Ziel je nach Milestone
-  let maxGoal = 50;
+  let progress = 0;
 
-if (bricksPlaced >= 50) maxGoal = 5000;
-if (bricksPlaced >= 5000) maxGoal = 500000;
-if (bricksPlaced >= 500000) maxGoal = 800000;
-if (bricksPlaced >= 800000) maxGoal = 1000000;
+  if (bricksPlaced < 50) {
+    progress = (bricksPlaced / 50) * 0.2;
+  } else if (bricksPlaced < 5000) {
+    progress = 0.2 + ((bricksPlaced - 50) / (5000 - 50)) * 0.2;
+  } else if (bricksPlaced < 500000) {
+    progress = 0.4 + ((bricksPlaced - 5000) / (500000 - 5000)) * 0.2;
+  } else if (bricksPlaced < 800000) {
+    progress = 0.6 + ((bricksPlaced - 500000) / (800000 - 500000)) * 0.2;
+  } else {
+    progress = 0.8 + ((bricksPlaced - 800000) / (1000000 - 800000)) * 0.2;
+  }
 
-let progress = bricksPlaced / 1000000;
+  progressFill.style.width = (progress * 100) + "%";
 
-let progress = 0;
+  let color = "#6fcf97";
 
-if (bricksPlaced < 50) {
-  progress = (bricksPlaced / 50) * 0.2;
-} else if (bricksPlaced < 5000) {
-  progress = 0.2 + ((bricksPlaced - 50) / (5000 - 50)) * 0.2;
-} else if (bricksPlaced < 500000) {
-  progress = 0.4 + ((bricksPlaced - 5000) / (500000 - 5000)) * 0.2;
-} else if (bricksPlaced < 800000) {
-  progress = 0.6 + ((bricksPlaced - 500000) / (800000 - 500000)) * 0.2;
-} else {
-  progress = 0.8 + ((bricksPlaced - 800000) / (1000000 - 800000)) * 0.2;
-}
-progressFill.style.width = (progress * 100) + "%";
-
-  // Farbe (optional – kannst du lassen)
-let color = "#6fcf97"; // default
-
-if (bricksPlaced >= 50) color = "#00e676";      // stärkeres grün
-if (bricksPlaced >= 5000) color = "#00c853";    // noch stärker
-if (bricksPlaced >= 500000) color = "#64dd17";  // fast lime
-if (bricksPlaced >= 800000) color = "#aeea00";  // gelb-grün
-if (bricksPlaced >= 1000000) color = "#ffd600"; // gold
+  if (bricksPlaced >= 50) color = "#00e676";
+  if (bricksPlaced >= 5000) color = "#00c853";
+  if (bricksPlaced >= 500000) color = "#64dd17";
+  if (bricksPlaced >= 800000) color = "#aeea00";
+  if (bricksPlaced >= 1000000) color = "#ffd600";
 
   progressFill.style.backgroundImage =
     `linear-gradient(90deg, #ffffff, ${color})`;
-
 }
 
 
