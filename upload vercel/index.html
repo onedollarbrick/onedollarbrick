@@ -1092,14 +1092,18 @@ I am part of the wall.`;
   )
   .subscribe();
 
-  function positionMilestones() {
+function positionMilestones() {
+
+  const totalSegments = milestones.length;
 
   document.querySelectorAll(".milestone").forEach((m, i) => {
-    const percent = (i / (milestones.length - 1)) * 100;
+    const percent = ((i + 1) / totalSegments) * 100;
     m.style.left = percent + "%";
   });
 
 }
+
+positionMilestones();
 
 positionMilestones();
 
