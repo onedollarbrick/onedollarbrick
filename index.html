@@ -625,12 +625,14 @@ function updateProgressBar() {
 
   const max = 1000000;
 
-  let progress = bricksPlaced / max;
+  let progress =
+    Math.log10(bricksPlaced + 1) / Math.log10(max);
 
   progress = Math.min(progress, 1);
 
   progressFill.style.width = (progress * 100) + "%";
 
+  // Farbe bleibt wie vorher
   let color = "#6fcf97";
 
   if (bricksPlaced >= 50) color = "#00e676";
