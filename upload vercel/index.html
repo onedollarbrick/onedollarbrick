@@ -1079,10 +1079,14 @@ I am part of the wall.`;
 
 function positionMilestones() {
 
-  const total = milestones.length - 1;
+  const max = 1000000;
 
-  document.querySelectorAll(".milestone").forEach((m, i) => {
-    const percent = (i / total) * 100;
+  document.querySelectorAll(".milestone").forEach(m => {
+    const goal = Number(m.dataset.goal);
+
+    const percent =
+      (Math.log10(goal) / Math.log10(max)) * 100;
+
     m.style.left = percent + "%";
   });
 
