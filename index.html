@@ -102,12 +102,12 @@ input{padding:8px;border-radius:6px;border:0;width:160px}
 .brick.placed{cursor:default}
 .brick.preview{outline:2px dashed #fff;opacity:.6}
 .footerNote{font-size:11px;opacity:.55;margin:28px 0 30px;text-align:center;max-width:520px;line-height:1.6}
-.milestones{
+.milestones {
   position: relative;
   max-width:1100px;
   width:100%;
   margin:22px auto 0;
-  height:60px;
+  height:100px; /* vorher 60 */
 }
 
 .milestone{
@@ -619,7 +619,7 @@ let pendingBrick = null;
 let bricksPlaced = 0;
 let selectedTier = 1;
 
-const milestones = [50, 5000, 500000, 800000, 1000000];
+const milestones = [0, 50, 5000, 500000, 800000, 1000000];
 
 function updateProgressBar() {
 
@@ -1094,10 +1094,10 @@ I am part of the wall.`;
 
 function positionMilestones() {
 
-  const totalSegments = milestones.length;
+  const total = milestones.length - 1;
 
   document.querySelectorAll(".milestone").forEach((m, i) => {
-    const percent = ((i + 1) / totalSegments) * 100;
+    const percent = (i / total) * 100;
     m.style.left = percent + "%";
   });
 
