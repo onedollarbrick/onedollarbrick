@@ -623,16 +623,28 @@ const milestones = [0, 50, 5000, 500000, 800000, 1000000];
 
 function updateProgressBar() {
 
-  const max = 1000000;
+  let progress = 0;
 
-  let progress =
-    Math.log10(bricksPlaced + 1) / Math.log10(max);
+  if (bricksPlaced <= 50) {
+    progress = (bricksPlaced / 50) * 0.1;
+  } 
+  else if (bricksPlaced <= 5000) {
+    progress = 0.1 + ((bricksPlaced - 50) / (5000 - 50)) * 0.2;
+  } 
+  else if (bricksPlaced <= 500000) {
+    progress = 0.3 + ((bricksPlaced - 5000) / (500000 - 5000)) * 0.3;
+  } 
+  else if (bricksPlaced <= 800000) {
+    progress = 0.6 + ((bricksPlaced - 500000) / (800000 - 500000)) * 0.2;
+  } 
+  else {
+    progress = 0.8 + ((bricksPlaced - 800000) / (1000000 - 800000)) * 0.2;
+  }
 
   progress = Math.min(progress, 1);
 
   progressFill.style.width = (progress * 100) + "%";
 
-  // Farbe bleibt wie vorher
   let color = "#6fcf97";
 
   if (bricksPlaced >= 50) color = "#00e676";
@@ -1081,17 +1093,17 @@ I am part of the wall.`;
 
 function positionMilestones() {
 
-  const max = 1000000;
+  const positions = [
+    10,  // 50
+    30,  // 5k
+    55,  // 500k
+    75,  // 800k
+    95   // 1M
+  ];
 
-  document.querySelectorAll(".milestone").forEach(m => {
-    const goal = Number(m.dataset.goal);
-
-    const percent =
-      (Math.log10(goal) / Math.log10(max)) * 100;
-
-    m.style.left = percent + "%";
+  document.querySelectorAll(".milestone").forEach((m, i) => {
+    m.style.left = positions[i] + "%";
   });
-
 }
 
 positionMilestones();
