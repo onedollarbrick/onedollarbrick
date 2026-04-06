@@ -623,29 +623,14 @@ const milestones = [0, 50, 5000, 500000, 800000, 1000000];
 
 function updateProgressBar() {
 
-  let progress = 0;
+  const max = 1000000;
 
-  for (let i = 0; i < milestones.length; i++) {
-
-    const start = i === 0 ? 0 : milestones[i - 1];
-    const end = milestones[i];
-
-    const segmentSize = 1 / milestones.length;
-
-    if (bricksPlaced <= end) {
-
-      const localProgress = (bricksPlaced - start) / (end - start);
-
-      progress = (i * segmentSize) + (localProgress * segmentSize);
-      break;
-    }
-  }
+  let progress = bricksPlaced / max;
 
   progress = Math.min(progress, 1);
 
   progressFill.style.width = (progress * 100) + "%";
 
-  // Farbe bleibt gleich
   let color = "#6fcf97";
 
   if (bricksPlaced >= 50) color = "#00e676";
